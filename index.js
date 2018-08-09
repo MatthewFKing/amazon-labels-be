@@ -30,6 +30,7 @@ app.use(fileUpload());
 app.use(cors({ origin: 'http://10.0.0.234:3000' }));
 
 app.get('/pdf', (req, res, next) => {
+    console.log(req.ip);
     fs.readFile('./myfile.pdf', function (err, data) {
         res.contentType("application/pdf");
         res.send(data);
@@ -40,12 +41,12 @@ app.get('/pdf', (req, res, next) => {
 
 app.post('/pdf', (req, res, next) => {
     let file = req.files.file;
-
+    let ip = req.ip;
     file.mv(`./tmp/test.pdf`, function (err) {
         if (err) {
             return res.status(500).send(err);
         } else {
-            helpers.pdfToPic('test', function (returnValue) {
+            helpers.pdfToPic(ip, function (returnValue) {
                 res.send(returnValue);
             })
         }

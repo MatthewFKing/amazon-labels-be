@@ -15,7 +15,7 @@ exports.pdfToPic = (query, callback) => {
         .then(done => {
             imagemagickCli.exec('convert -crop 1700x1100 -gravity center -trim ./images/*.png ./cropped/cropped_%d.png')
                 .then(result1 => {
-                    console.log('cropped')
+                    console.log('cropped', query)
                     imagemagickCli.exec('convert ./cropped/* -page 1275x852 myfile.pdf') //-extent 1700x1100 -page 1275x852
                         .then(result => {
                             callback(result);
