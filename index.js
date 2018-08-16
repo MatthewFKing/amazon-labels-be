@@ -24,13 +24,16 @@ const deleteFiles = (dir) => {
 
 
 app.use(bodyParser.urlencoded({ limit: '1gb', extended: false }));
+app.use(bodyParser.json());
 app.use(bodyParser.raw({ limit: '1gb', type: 'application/pdf' }));
+
 app.use(fileUpload());
 
 app.use(cors({ origin: 'http://10.0.0.234:3000' }));
 
 app.get('/pdf', (req, res, next) => {
     console.log(req.ip);
+    console.log(new Date().toLocaleTimeString());
     fs.readFile('./myfile.pdf', function (err, data) {
         res.contentType("application/pdf");
         res.send(data);
@@ -51,7 +54,18 @@ app.post('/pdf', (req, res, next) => {
             })
         }
     });
+});
 
+app.post('/ro', (req, res, next) => {
+    helpers.ro(req.body, function (returnValue){
+        res.send(returnValue);
+    });
+});
+
+app.post('/roGen', (req, res, next) => {
+    helpers.roGen(req.body, function (returnValue){
+        res.send(returnValue);
+    });
 });
 
 
