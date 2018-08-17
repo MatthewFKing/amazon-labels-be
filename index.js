@@ -58,20 +58,24 @@ app.post('/pdf', (req, res, next) => {
 });
 
 app.post('/ro', (req, res, next) => {
-    helpers.ro(req.body, function (returnValue){
+    helpers.ro(req.body, function (returnValue) {
         res.send(returnValue);
     });
 });
 
 app.post('/roGen', (req, res, next) => {
-    helpers.roGen(req.body, function (returnValue){
+    helpers.roGen(req.body, function (returnValue) {
         let missingParts = returnValue.missingParts;
-        stringify(returnValue.report, function(err, output){
-            
+        stringify(returnValue.report, function (err, output) {
+
             res.contentType('text/csv');
-            res.send({output, missingParts});
-          });
+            res.send({ output, missingParts });
+        });
     });
+});
+
+app.post('/neEbReport', (req, res, next) => {
+    res.send('Newegg Ebay SO Report');
 });
 
 

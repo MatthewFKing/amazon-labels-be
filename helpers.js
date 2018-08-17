@@ -32,12 +32,9 @@ exports.ro = (query, callback) => {
 }
 
 exports.roGen = (data, callback) => {
-
+    const parts = require('./part.json');
     let report = data.report;
     let poList = data.poList;
-
-    const parts = require('./part.json');
-
 
     let reducedReport = report.filter(line => {
         return poList.indexOf(line[1]) > -1 ? line : null;
@@ -49,7 +46,7 @@ exports.roGen = (data, callback) => {
 
     let unfoundParts = reducedReport.filter(line => {
         return !parts.find(part => {
-            return part.PartNumber === line[5];
+            return part.PartNumber === `${line[5]}-UF`;
         });
     });
 
@@ -58,7 +55,7 @@ exports.roGen = (data, callback) => {
     });
 
     let partsSheet = partsImport(unfoundParts, Object.getOwnPropertyNames(parts[0]));
-    let dataCallBack = {report: fbRoReport(reducedReport), missingParts}
+    let dataCallBack = { report: fbRoReport(reducedReport), missingParts }
     callback(dataCallBack);
 }
 
@@ -68,14 +65,14 @@ const partJSON = () => {
 
     csv()
         .fromFile(partCSV)
-        .on('json',(jsonObj)=>{
+        .on('json', (jsonObj) => {
             let partJson = jsonObj;
         });
 }
 
 const partsImport = (parts, headers) => {
     let neededParts = parts.map(part => {
-        return [part[5], ...Array(headers.length-1).fill('')];
+        return [part[5], ...Array(headers.length - 1).fill('')];
     });
     let report = [headers, ...neededParts];
 
@@ -85,11 +82,12 @@ const partsImport = (parts, headers) => {
 const fbRoReport = (parts) => {
     const headers = require('./headers.js');
     const today = new Date().toLocaleDateString()
-    const stringify = require('csv-stringify');
     const fs = require('fs');
+
     let report = [];
     report.push(headers.roHeader1.split(','));
     report.push(headers.roHeader2.split(','));
+
     let poList = parts.map(line => {
         return line[1];
     });
@@ -101,8 +99,8 @@ const fbRoReport = (parts) => {
         poLine[1] = poList[i];
         poLine[9] = today;
         report.push(poLine);
-        
-        for(let x = 0; x < parts.length; x++) {
+
+        for (let x = 0; x < parts.length; x++) {
             if (parts[x][1] === poList[i]) {
                 let itemLine = headers.roItemLine.split(',');
                 itemLine[2] = `${parts[x][5]}-UF`;
