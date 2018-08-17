@@ -6,6 +6,7 @@ const fileUpload = require('express-fileupload');
 const cors = require('cors');
 const helpers = require('./helpers');
 const fs = require('fs');
+const stringify = require('csv-stringify');
 const path = require('path');
 
 const deleteFiles = (dir) => {
@@ -64,7 +65,12 @@ app.post('/ro', (req, res, next) => {
 
 app.post('/roGen', (req, res, next) => {
     helpers.roGen(req.body, function (returnValue){
-        res.send(returnValue);
+        let missingParts = returnValue.missingParts;
+        stringify(returnValue.report, function(err, output){
+            
+            res.contentType('text/csv');
+            res.send({output, missingParts});
+          });
     });
 });
 

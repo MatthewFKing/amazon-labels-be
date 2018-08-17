@@ -53,8 +53,13 @@ exports.roGen = (data, callback) => {
         });
     });
 
+    let missingParts = unfoundParts.map(line => {
+        return line[5]
+    });
+
     let partsSheet = partsImport(unfoundParts, Object.getOwnPropertyNames(parts[0]));
-    callback(partsSheet);
+    let dataCallBack = {report: fbRoReport(reducedReport), missingParts}
+    callback(dataCallBack);
 }
 
 const partJSON = () => {
@@ -77,5 +82,39 @@ const partsImport = (parts, headers) => {
     return report;
 }
 
+const fbRoReport = (parts) => {
+    const headers = require('./headers.js');
+    const today = new Date().toLocaleDateString()
+    const stringify = require('csv-stringify');
+    const fs = require('fs');
+    let report = [];
+    report.push(headers.roHeader1.split(','));
+    report.push(headers.roHeader2.split(','));
+    let poList = parts.map(line => {
+        return line[1];
+    });
+
+    poList = [...new Set(poList)];
+
+    for (let i = 0; i < poList.length; i++) {
+        let poLine = headers.roPoLine.split(',');
+        poLine[1] = poList[i];
+        poLine[9] = today;
+        report.push(poLine);
+        
+        for(let x = 0; x < parts.length; x++) {
+            if (parts[x][1] === poList[i]) {
+                let itemLine = headers.roItemLine.split(',');
+                itemLine[2] = `${parts[x][5]}-UF`;
+                itemLine[3] = `${parts[x][5]}-UF`;
+                itemLine[4] = parts[x][8];
+                itemLine[9] = today;
+                itemLine[10] = today;
+                report.push(itemLine);
+            }
+        }
+    }
+    return report;
+}
 
 //[-]\d$
