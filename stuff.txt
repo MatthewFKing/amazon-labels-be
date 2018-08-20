@@ -4,3 +4,10 @@ SOPs
 Backorders
 INT BuildSheet
 So List
+handling errors
+verify files are present before sending to be
+updating parts file
+react router
+mongodb 
+linking with spreadsheets
+branching in git

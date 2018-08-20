@@ -33,6 +33,8 @@ exports.ro = (query, callback) => {
 
 exports.roGen = (data, callback) => {
     const parts = require('./part.json');
+    const stringify = require('csv-stringify');
+
     let report = data.report;
     let poList = data.poList;
 
@@ -54,8 +56,15 @@ exports.roGen = (data, callback) => {
         return line[5]
     });
 
-    let partsSheet = partsImport(unfoundParts, Object.getOwnPropertyNames(parts[0]));
-    let dataCallBack = { report: fbRoReport(reducedReport), missingParts }
+    //building response data
+    //needs: TO Report, Part import, Add Inventory
+
+    let dataCallBack = { 
+        report: fbRoReport(reducedReport), 
+        partReport: partsImport(missingParts),
+        invImport: invAdd(reducedReport)
+    };
+
     callback(dataCallBack);
 }
 
@@ -70,14 +79,55 @@ const partJSON = () => {
         });
 }
 
-const partsImport = (parts, headers) => {
-    let neededParts = parts.map(part => {
-        return [part[5], ...Array(headers.length - 1).fill('')];
-    });
-    let report = [headers, ...neededParts];
+const partsImport = (parts) => {
+    const partsExport = require('./part.json');
+    const headers = require('./headers.js');
+    
+    let partsReport = [];
+    partsReport.push(headers.partsHeader.split(','));
 
-    return report;
+    parts.map(part => {
+        let foundPart = partsExport.find(fbPart => {
+            return fbPart.PartNumber === part
+        });
+        let partLine = foundPart ? Object.values(foundPart) : headers.partsItem.split(',');
+        partLine[0] = `${part}-UF`;
+        partsReport.push(partLine);
+    });
+    return partsReport;
 }
+
+const invAdd = (parts) => {
+    const partsExport = require('./part.json');
+    const headers = require('./headers.js');
+    let startingUF = 2842;
+
+    let invReport = [];
+    invReport.push(headers.invHeader1.split(','));
+
+    parts.map(line => {
+        let itemLine = headers.invItem.split(',');
+        let tracking = partsExport.find(fbPart => {
+            return fbPart.PartNumber === line[5];
+        });
+        itemLine[0] = `${line[5]}-UF`;
+        itemLine[3] = line[8];
+        itemLine[8] = !tracking || tracking['Tracks-Lot Number'] === "true" ? "UNFULFILLABLE" : "";
+        invReport.push(itemLine);
+        if (tracking && tracking['Tracks-Lot Number'] === "false") {
+            invReport.push(headers.invSN.split(','));
+            for (let x = 0; x < parseInt(line[8]); x++) {
+                let ufLine = headers.invUF.split(',');
+                ufLine[0] = `UF00${startingUF}`;
+                startingUF++;
+                invReport.push(ufLine);
+            }
+        }
+    });
+    
+    return invReport;
+
+};
 
 const fbRoReport = (parts) => {
     const headers = require('./headers.js');
@@ -97,17 +147,17 @@ const fbRoReport = (parts) => {
     for (let i = 0; i < poList.length; i++) {
         let poLine = headers.roPoLine.split(',');
         poLine[1] = poList[i];
-        poLine[9] = today;
+        poLine[20] = today;
+        poLine[21] = today;
+        poLine[23] = today;
         report.push(poLine);
 
         for (let x = 0; x < parts.length; x++) {
             if (parts[x][1] === poList[i]) {
                 let itemLine = headers.roItemLine.split(',');
-                itemLine[2] = `${parts[x][5]}-UF`;
-                itemLine[3] = `${parts[x][5]}-UF`;
-                itemLine[4] = parts[x][8];
-                itemLine[9] = today;
-                itemLine[10] = today;
+                itemLine[1] = `${parts[x][5]}-UF`;
+                itemLine[2] = parts[x][8];
+                itemLine[4] = today;
                 report.push(itemLine);
             }
         }

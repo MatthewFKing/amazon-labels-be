@@ -66,10 +66,13 @@ app.post('/ro', (req, res, next) => {
 app.post('/roGen', (req, res, next) => {
     helpers.roGen(req.body, function (returnValue) {
         let missingParts = returnValue.missingParts;
-        stringify(returnValue.report, function (err, output) {
-
-            res.contentType('text/csv');
-            res.send({ output, missingParts });
+        stringify(returnValue.report, function (err, toReport) {
+            stringify(returnValue.invImport, function (err, invReport) {
+                stringify(returnValue.partReport, function (err, partReport) {
+                    res.contentType('text/csv');
+                    res.send({ toReport, partReport, invReport });
+                });
+            });
         });
     });
 });
