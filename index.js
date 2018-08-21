@@ -30,7 +30,7 @@ app.use(bodyParser.raw({ limit: '1gb', type: 'application/pdf' }));
 
 app.use(fileUpload());
 
-app.use(cors({ origin: 'http://10.0.0.234:3000' }));
+app.use(cors());
 
 app.get('/pdf', (req, res, next) => {
     console.log(req.ip);
