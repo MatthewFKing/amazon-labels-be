@@ -9,7 +9,7 @@ exports.pdfToPic = (query, callback) => {
         format: "png",          // output file format
         size: 1700
 
-    })
+    });
 
     converter.convertBulk("./tmp/test.pdf", -1)
         .then(done => {
@@ -21,7 +21,7 @@ exports.pdfToPic = (query, callback) => {
                             callback(result);
                         });
                 });
-        })
+        });
 };
 
 exports.ro = (query, callback) => {

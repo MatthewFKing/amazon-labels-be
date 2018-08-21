@@ -8,6 +8,10 @@ const helpers = require('./helpers');
 const fs = require('fs');
 const stringify = require('csv-stringify');
 const path = require('path');
+var mongoose = require('mongoose');
+const ufNumber = require('./models/UF');
+
+mongoose.connect('mongodb://localhost/warehouse', { useNewUrlParser: true });
 
 const deleteFiles = (dir) => {
     const directory = dir;
@@ -32,6 +36,8 @@ app.use(fileUpload());
 
 app.use(cors());
 
+/////////////////////////////////////////////
+//Amazon Label Generator
 app.get('/pdf', (req, res, next) => {
     console.log(req.ip);
     console.log(new Date().toLocaleTimeString());
@@ -57,6 +63,8 @@ app.post('/pdf', (req, res, next) => {
     });
 });
 
+/////////////////////////////////////////////
+//Removal Order Generator
 app.post('/ro', (req, res, next) => {
     helpers.ro(req.body, function (returnValue) {
         res.send(returnValue);
@@ -77,17 +85,37 @@ app.post('/roGen', (req, res, next) => {
     });
 });
 
+/////////////////////////////////////////////
+//Removal Order/Update UF Number
+app.post('/ufnum', (req, res, next) => {
+    const newUFNumber = new ufNumber(req.body);
+    newUFNumber.save((err, ufnum) => {
+        if (err) return next(err);
+        res.status(201);
+        res.json(ufnum);
+    });
+});
+
+app.get('/ufnum', (req, res, next) => {
+    ufNumber.find({}, (err, num) => {
+        if (err) return next(err);
+        res.status(201);
+        res.json(num);
+    })
+});
+
+/////////////////////////////////////////////
+//Newegg Ebay Order Report
 app.post('/neEbReport', (req, res, next) => {
     res.send('Newegg Ebay SO Report');
 });
-
 
 app.use((err, req, res, next) => {
     console.log(err);
     res.status(500).send(err);
 });
 
-const port = process.env.PORT || 3090;
+const port = process.env.PORT || 3030;
 const server = http.createServer(app);
 server.listen(port);
 console.log("Server listening on:", port);
