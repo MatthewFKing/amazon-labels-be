@@ -59,13 +59,37 @@ exports.roGen = (data, callback) => {
     //building response data
     //needs: TO Report, Part import, Add Inventory
 
-    let dataCallBack = { 
-        report: fbRoReport(reducedReport), 
+    let dataCallBack = {
+        report: fbRoReport(reducedReport),
         partReport: partsImport(missingParts),
         invImport: invAdd(reducedReport)
     };
 
     callback(dataCallBack);
+}
+
+exports.partList = (data, callback) => {
+    const csvFilePath = './parttest.csv';
+    const csv = require('csvtojson')
+    var fs = require('fs');
+
+    csv().fromFile(csvFilePath, function (err, result) {
+
+        if (err) {
+            console.log("An Error Has Occured");
+            console.log(err);
+        }
+
+        var json = result;
+        
+        fs.writeFile("parttest.json", JSON.stringify(json), function (err) {
+            if (err) throw err;
+            console.log('done');
+            callback('complete');
+            
+        }
+        );
+    });
 }
 
 const partJSON = () => {
@@ -82,7 +106,7 @@ const partJSON = () => {
 const partsImport = (parts) => {
     const partsExport = require('./part.json');
     const headers = require('./headers.js');
-    
+
     let partsReport = [];
     partsReport.push(headers.partsHeader.split(','));
 
@@ -124,7 +148,7 @@ const invAdd = (parts) => {
             }
         }
     });
-    
+
     return invReport;
 
 };

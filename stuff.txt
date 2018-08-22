@@ -11,5 +11,10 @@ react router
 mongodb 
 linking with spreadsheets
 branching in git
+split routes to different files
+organize fe folders
+make pdfs specific to user
+some type of login for people using the site
+split helper files
 
 FBA TO end of day
