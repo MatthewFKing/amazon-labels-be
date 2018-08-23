@@ -9,9 +9,11 @@ const neebHelpers = require('./neebHelpers');
 const fs = require('fs');
 const stringify = require('csv-stringify');
 const path = require('path');
-var mongoose = require('mongoose');
+const mongoose = require('mongoose');
 const ufNumber = require('./models/UF');
+const completedNE = require('./models/CompletedNE');
 const csv = require("csvtojson");
+const waitOn = require('wait-on');
 
 mongoose.connect('mongodb://localhost/warehouse', { useNewUrlParser: true });
 
@@ -31,13 +33,16 @@ const deleteFiles = (dir) => {
 
 
 app.use(bodyParser.urlencoded({ limit: '1gb', extended: false }));
-app.use(bodyParser.json({limit: '50mb'}));
+app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.raw({ limit: '1gb', type: 'application/pdf' }));
 
 app.use(fileUpload());
 
 app.use(cors());
 app.options('*', cors());
+
+const caRoute = require('./routes/ca');
+app.use('/ca', caRoute);
 
 /////////////////////////////////////////////
 //Amazon Label Generator
@@ -119,30 +124,70 @@ app.post('/partlist', (req, res, next) => {
 //Newegg Ebay Order Report
 app.post('/neebreport', (req, res, next) => {
     const file = req.files.file;
-    
-    neebHelpers.ebOrderNumbers(req.body.ebReport, (returnValue) => {
-        res.send(returnValue);
-    })
-    // file.mv(`./reporttmp/nereport.xls`, function (err) {
-    //     if (err) {
-    //         return res.status(500).send(err);
-    //     } else {
-    //         // neebHelpers.neConverter('data', (returnValue) => {
-    //         //     res.send(returnValue);
-    //         // });
 
-    //         // neebHelpers.ebOrderNumbers(req.body, (returnValue) => {
-    //         //     res.send(returnValue);
-    //         // })
-    //     }
-    // });
-    
+    const timeStamp = Date.now();
+
+    file.mv(`./reporttmp/${timeStamp}.xls`)
+        .then(file => {
+
+            waitOn({ resources: [`./reporttmp/${timeStamp}.xls`] }, function (err) {
+                if (err) { return handleError(err); }
+                completedNE.find({}, function (err, ids) {
+                    var orderList = [];
+                    ids.forEach(id => orderList.push(id.ID));
+
+                    if (req.body.ebReport) {
+                        const data = {
+                            neData: {
+                                orderList,
+                                timeStamp,
+                            },
+                            ebData: req.body
+                        };
+                        neebHelpers.neebConverter(data, (returnValue) => {
+                            if (returnValue.currentOrders) {
+                                returnValue.currentOrders.map(order => {
+                                    const completeNE = new completedNE({ ID: order });
+                                    completeNE.save((err, id) => {
+                                        if (err) return next(err);
+                                    });
+                                });
+                            }
+                            res.send(returnValue.fbReport);
+                        })
+                    } else {
+
+                        const data = { orderList, timeStamp };
+
+                        neebHelpers.neConverter(data, (returnValue) => {
+                            if (returnValue.currentOrders) {
+                                returnValue.currentOrders.map(order => {
+                                    const completeNE = new completedNE({ ID: order });
+                                    completeNE.save((err, id) => {
+                                        if (err) return next(err);
+                                    });
+                                });
+                            }
+                            res.send(returnValue.fbReport);
+                        });
+                    }
+                });
+            });
+        });
+
     //parse info from ebay report
     //parse info from newegg report
     //return ebay order ids to be approved
     //check through completed newegg orders
     //headers for FB report
     //return FB report for download
+});
+
+app.post('/ebreport', (req, res, next) => {
+    console.log(req.id);
+    neebHelpers.ebConverter(req.body, (returnValue) => {
+        res.send(returnValue);
+    });
 });
 
 app.use((err, req, res, next) => {
