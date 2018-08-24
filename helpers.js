@@ -138,7 +138,7 @@ const invAdd = (parts) => {
         itemLine[3] = line[8];
         itemLine[8] = !tracking || tracking['Tracks-Lot Number'] === "true" ? "UNFULFILLABLE" : "";
         invReport.push(itemLine);
-        if (tracking && tracking['Tracks-Lot Number'] === "false") {
+        if (tracking && tracking['Tracks-Serial Number'] === "true") {
             invReport.push(headers.invSN.split(','));
             for (let x = 0; x < parseInt(line[8]); x++) {
                 let ufLine = headers.invUF.split(',');

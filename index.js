@@ -153,8 +153,11 @@ app.post('/neebreport', (req, res, next) => {
                                     });
                                 });
                             }
-                            res.send(returnValue.fbReport);
-                        })
+                            stringify(returnValue.fbReport, function (err, fbReport) {
+                                res.contentType('text/csv');
+                                res.send({ fbReport });
+                            });
+                        });
                     } else {
 
                         const data = { orderList, timeStamp };
