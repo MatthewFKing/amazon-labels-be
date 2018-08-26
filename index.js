@@ -4,18 +4,19 @@ const app = express();
 const bodyParser = require('body-parser');
 const fileUpload = require('express-fileupload');
 const cors = require('cors');
-const helpers = require('./helpers');
+const helpers = require('./helpers/helpers');
 const neebHelpers = require('./neebHelpers');
 const fs = require('fs');
 const stringify = require('csv-stringify');
 const path = require('path');
 const mongoose = require('mongoose');
-const ufNumber = require('./models/UF');
 const completedNE = require('./models/CompletedNE');
 const csv = require("csvtojson");
 const waitOn = require('wait-on');
 
-mongoose.connect('mongodb://localhost/warehouse', { useNewUrlParser: true });
+mongoose.connect('mongodb://localhost/warehouse', {
+    useNewUrlParser: true
+});
 
 const deleteFiles = (dir) => {
     const directory = dir;
@@ -31,10 +32,17 @@ const deleteFiles = (dir) => {
     });
 }
 
-
-app.use(bodyParser.urlencoded({ limit: '1gb', extended: false }));
-app.use(bodyParser.json({ limit: '50mb' }));
-app.use(bodyParser.raw({ limit: '1gb', type: 'application/pdf' }));
+app.use(bodyParser.urlencoded({
+    limit: '1gb',
+    extended: false
+}));
+app.use(bodyParser.json({
+    limit: '50mb'
+}));
+app.use(bodyParser.raw({
+    limit: '1gb',
+    type: 'application/pdf'
+}));
 
 app.use(fileUpload());
 
@@ -42,6 +50,8 @@ app.use(cors());
 app.options('*', cors());
 
 const caRoute = require('./routes/ca');
+const roRoute = require('./routes/ro');
+app.use('/ro', roRoute);
 app.use('/ca', caRoute);
 
 /////////////////////////////////////////////
@@ -72,55 +82,6 @@ app.post('/pdf', (req, res, next) => {
 });
 
 /////////////////////////////////////////////
-//Removal Order Generator
-app.post('/ro', (req, res, next) => {
-    helpers.ro(req.body, function (returnValue) {
-        res.send(returnValue);
-    });
-});
-
-app.post('/roGen', (req, res, next) => {
-    helpers.roGen(req.body, function (returnValue) {
-        let missingParts = returnValue.missingParts;
-        stringify(returnValue.report, function (err, toReport) {
-            stringify(returnValue.invImport, function (err, invReport) {
-                stringify(returnValue.partReport, function (err, partReport) {
-                    res.contentType('text/csv');
-                    res.send({ toReport, partReport, invReport });
-                });
-            });
-        });
-    });
-});
-
-/////////////////////////////////////////////
-//Removal Order/Update UF Number
-app.post('/ufnum', (req, res, next) => {
-    const newUFNumber = new ufNumber(req.body);
-    newUFNumber.save((err, ufnum) => {
-        if (err) return next(err);
-        res.status(201);
-        res.json(ufnum);
-    });
-});
-
-app.get('/ufnum', (req, res, next) => {
-    ufNumber.find({}, (err, num) => {
-        if (err) return next(err);
-        res.status(201);
-        res.json(num);
-    })
-});
-
-/////////////////////////////////////////////
-//Removal Order Update Parts List
-app.post('/partlist', (req, res, next) => {
-    helpers.partList('data', function (returnValue) {
-        res.send(returnValue);
-    });
-});
-
-/////////////////////////////////////////////
 //Newegg Ebay Order Report
 app.post('/neebreport', (req, res, next) => {
     const file = req.files.file;
@@ -130,8 +91,12 @@ app.post('/neebreport', (req, res, next) => {
     file.mv(`./reporttmp/${timeStamp}.xls`)
         .then(file => {
 
-            waitOn({ resources: [`./reporttmp/${timeStamp}.xls`] }, function (err) {
-                if (err) { return handleError(err); }
+            waitOn({
+                resources: [`./reporttmp/${timeStamp}.xls`]
+            }, function (err) {
+                if (err) {
+                    return handleError(err);
+                }
                 completedNE.find({}, function (err, ids) {
                     var orderList = [];
                     ids.forEach(id => orderList.push(id.ID));
@@ -147,7 +112,9 @@ app.post('/neebreport', (req, res, next) => {
                         neebHelpers.neebConverter(data, (returnValue) => {
                             if (returnValue.currentOrders) {
                                 returnValue.currentOrders.map(order => {
-                                    const completeNE = new completedNE({ ID: order });
+                                    const completeNE = new completedNE({
+                                        ID: order
+                                    });
                                     completeNE.save((err, id) => {
                                         if (err) return next(err);
                                     });
@@ -155,17 +122,24 @@ app.post('/neebreport', (req, res, next) => {
                             }
                             stringify(returnValue.fbReport, function (err, fbReport) {
                                 res.contentType('text/csv');
-                                res.send({ fbReport });
+                                res.send({
+                                    fbReport
+                                });
                             });
                         });
                     } else {
 
-                        const data = { orderList, timeStamp };
+                        const data = {
+                            orderList,
+                            timeStamp
+                        };
 
                         neebHelpers.neConverter(data, (returnValue) => {
                             if (returnValue.currentOrders) {
                                 returnValue.currentOrders.map(order => {
-                                    const completeNE = new completedNE({ ID: order });
+                                    const completeNE = new completedNE({
+                                        ID: order
+                                    });
                                     completeNE.save((err, id) => {
                                         if (err) return next(err);
                                     });
@@ -177,13 +151,6 @@ app.post('/neebreport', (req, res, next) => {
                 });
             });
         });
-
-    //parse info from ebay report
-    //parse info from newegg report
-    //return ebay order ids to be approved
-    //check through completed newegg orders
-    //headers for FB report
-    //return FB report for download
 });
 
 app.post('/ebreport', (req, res, next) => {

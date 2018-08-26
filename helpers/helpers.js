@@ -105,7 +105,7 @@ const partJSON = () => {
 
 const partsImport = (parts) => {
     const partsExport = require('./part.json');
-    const headers = require('./headers.js');
+    const headers = require('./headers');
 
     let partsReport = [];
     partsReport.push(headers.partsHeader.split(','));
@@ -123,7 +123,7 @@ const partsImport = (parts) => {
 
 const invAdd = (parts) => {
     const partsExport = require('./part.json');
-    const headers = require('./headers.js');
+    const headers = require('./headers');
     let startingUF = 2842;
 
     let invReport = [];
@@ -154,7 +154,7 @@ const invAdd = (parts) => {
 };
 
 const fbRoReport = (parts) => {
-    const headers = require('./headers.js');
+    const headers = require('./headers');
     const today = new Date().toLocaleDateString()
     const fs = require('fs');
 

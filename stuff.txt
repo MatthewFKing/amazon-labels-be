@@ -1,14 +1,15 @@
 RO Parts List
-EB NE Order Report
+
 SOPs
 Backorders
 INT BuildSheet
 So List
 handling errors
-verify files are present before sending to be
+verify files are present before sending to BE
+move headers to DB or create objects
 updating parts file
-react router
-mongodb 
+
+
 linking with spreadsheets
 branching in git
 split routes to different files
@@ -20,4 +21,6 @@ split helper files
 FBA TO end of day
 
 Done:
-
+react router
+EB NE Order Report
+mongodb 
