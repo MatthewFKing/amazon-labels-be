@@ -1,3 +1,5 @@
+const moment = require('moment');
+
 exports.pdfToPic = (query, callback) => {
     let PDF2Pic = require('pdf2pic').default
     const imagemagickCli = require('imagemagick-cli');
@@ -155,7 +157,7 @@ const invAdd = (parts) => {
 
 const fbRoReport = (parts) => {
     const headers = require('./headers');
-    const today = new Date().toLocaleDateString()
+    const today = moment().format('L');
     const fs = require('fs');
 
     let report = [];

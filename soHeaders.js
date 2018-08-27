@@ -5,6 +5,8 @@ const so = {
   line: "SO,,20,,,,,,,,United States,,,,,,United States,UPS,None,30,,,,,Prepaid & Billed,,Origin,,None,CUK Powhatan,,,,,,,",
   item: "Item,10,,,,ea,,FALSE,,,None,,TRUE,FALSE,,,,,,,,,,,,,,,,,,,,,,,",
   shipping: "Item,60,SHIPPING,Shipping Fees,1,ea,,FALSE,,,None,,TRUE,FALSE,,,,,,,,,,,,,,,,,,,,,,,",
+  gst: "Item,60,GST/HST,GST/HST,1,ea,,FALSE,,,None,,TRUE,FALSE,,,,,,,,,,,,,,,,,,,,,,,",
+  eWaste: "Item,60,E-waste Recycling Fee,E-waste Recycling Fee,1,ea,,FALSE,,,None,,TRUE,FALSE,,,,,,,,,,,,,,,,,,,,,,,"
 }
 
 exports.so = so;

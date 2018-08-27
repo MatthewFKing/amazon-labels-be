@@ -151,8 +151,8 @@ const ebConverter = exports.ebConverter = (data, callback) => {
       soLine[16] = ebReport[i][10];
 
       //Tax
-      if (ebReport[i][17] > 0) {
-        soLine[18] = ebReport[i][8] + " - " + (ebReport[i][17] / (ebReport[i][15] * ebReport[i][14]) * 100).toFixed(2) + "%";
+      if (parseInt(ebReport[i][17]) > 0) {
+        soLine[18] = parseInt(ebReport[i][8]) + " - " + (parseInt(ebReport[i][17]) / (parseInt(ebReport[i][15]) * parseInt(ebReport[i][14])) * 100).toFixed(2) + "%";
       } else if (ebReport[i][17] === 0) {
         soLine[18] = "NONE";
       }
@@ -191,9 +191,9 @@ const ebConverter = exports.ebConverter = (data, callback) => {
       itemLine[6] = ebReport[i][15];
 
       //Tax
-      if (ebReport[i][17] > 0) {
+      if (parseInt(ebReport[i][17]) > 0) {
         itemLine[7] = "TRUE";
-        itemLine[8] = ebReport[i][8] + (ebReport[i][17] / (ebReport[i][15] * ebReport[i][14]) * 100).toFixed(1);
+        itemLine[8] = parseInt(ebReport[i][8]) + (parseInt(ebReport[i][17]) / (parseInt(ebReport[i][15]) * parseInt(ebReport[i][14])) * 100).toFixed(1);
       } else if (ebReport[i][17] === 0) {
         itemLine[7] = "FALSE";
       }
