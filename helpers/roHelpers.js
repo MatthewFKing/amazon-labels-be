@@ -1,4 +1,7 @@
 const moment = require('moment');
+const partsExport = require('../data/part.json');
+const headers = require('./headers.js');
+const fs = require('fs');
 
 ////////////////////////////////
 // Send list of POs back to client
@@ -13,7 +16,6 @@ exports.ro = (query, callback) => {
 /////////////////////////////////
 // Generate the Report
 exports.roGen = (data, callback) => {
-    const parts = require('../data/part.json');
     const stringify = require('csv-stringify');
 
     let report = data.report;
@@ -28,7 +30,7 @@ exports.roGen = (data, callback) => {
     });
 
     let unfoundParts = reducedReport.filter(line => {
-        return !parts.find(part => {
+        return !partsExport.find(part => {
             return part.PartNumber === `${line[5]}-UF`;
         });
     });
@@ -50,7 +52,7 @@ exports.roGen = (data, callback) => {
 }
 
 const partsImport = (parts) => {
-    const partsExport = require('../data/part.json');
+
     const headers = require('./headers');
 
     let partsReport = [];
@@ -70,8 +72,6 @@ const partsImport = (parts) => {
 
 const invAdd = (parts, startingUF) => {
     const ufNumber = require('../models/UF');
-    const partsExport = require('../data/part.json');
-    const headers = require('./headers.js');
 
     let invReport = [];
     invReport.push(headers.invHeader1.split(','));
@@ -96,7 +96,9 @@ const invAdd = (parts, startingUF) => {
         }
     });
 
-    const newUFNumber = new ufNumber({ current: startingUF });
+    const newUFNumber = new ufNumber({
+        current: startingUF
+    });
     newUFNumber.save((err, ufnum) => {
         if (err) return next(err);
         console.log(ufnum);
@@ -107,9 +109,7 @@ const invAdd = (parts, startingUF) => {
 };
 
 const fbRoReport = (parts) => {
-    const headers = require('./headers.js');
     const today = moment().format('L');
-    const fs = require('fs');
 
     let report = [];
     report.push(headers.roHeader1.split(','));
@@ -145,9 +145,8 @@ const fbRoReport = (parts) => {
 //////////////////////////////
 // Update Parts List
 exports.partList = (data, callback) => {
-    const csv = require('csvtojson')
+    const csv = require('csvtojson');
     const partCSV = './reporttmp/parts.csv';
-    const fs = require('fs');
 
     let partJson = [];
     csv()
@@ -163,8 +162,7 @@ exports.partList = (data, callback) => {
                 fs.writeFile("./data/part.json", JSON.stringify(partJson), function (err) {
                     if (err) throw err;
                     console.log('done');
-                }
-                );
+                });
             });
         })
 

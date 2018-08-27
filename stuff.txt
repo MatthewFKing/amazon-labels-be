@@ -24,3 +24,13 @@ Done:
 react router
 EB NE Order Report
 mongodb 
+
+
+newegg reports combination:
+combine all SO reports into one helper.
+combine all headers to one file
+rename variables that are used across helpers instead of declaring them multiple tiems
+split function to read from xls and return json
+create a function to create the report
+report function takes data to make either CA or US (if eWasteFees exist)
+return the report

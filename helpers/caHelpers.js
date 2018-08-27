@@ -1,4 +1,4 @@
-const headers = require('../soHeaders.js').so;
+const headers = require('./headers.js').so;
 
 const neCaConverter = exports.neCaConverter = (data, callback) => {
   var XLSX = require('xlsx');
