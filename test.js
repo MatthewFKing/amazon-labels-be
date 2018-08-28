@@ -31,4 +31,9 @@
 // });
 
 const moment = require('moment');
-console.log(moment().format('L'));
+// console.log(moment().format('L'));
+
+const time = "2018-09-06T06:59:59+00:00"
+
+const day = moment(time).format('L');
+console.log(day);

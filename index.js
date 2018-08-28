@@ -145,7 +145,12 @@ app.post('/neebreport', (req, res, next) => {
                                     });
                                 });
                             }
-                            res.send(returnValue.fbReport);
+                            stringify(returnValue.fbReport, function (err, fbReport) {
+                                res.contentType('text/csv');
+                                res.send({
+                                    fbReport
+                                });
+                            });
                         });
                     }
                 });
@@ -156,7 +161,12 @@ app.post('/neebreport', (req, res, next) => {
 app.post('/ebreport', (req, res, next) => {
     console.log(req.id);
     neebHelpers.ebConverter(req.body, (returnValue) => {
-        res.send(returnValue);
+        stringify(returnValue, function (err, fbReport) {
+            res.contentType('text/csv');
+            res.send({
+                fbReport
+            });
+        });
     });
 });
 

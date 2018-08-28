@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const waitOn = require('wait-on');
 const helpers = require('../helpers/caHelpers');
+const stringify = require('csv-stringify');
 
 router.get('/', (req, res, next) => {
   res.send('ca orders');
@@ -16,7 +17,7 @@ router.post('/', (req, res, next) => {
     .then(file => {
       waitOn({
         resources: [`./reporttmp/${timeStamp}CA.xls`]
-      }, function (err) { 
+      }, function (err) {
         const data = { timeStamp };
         helpers.neCaConverter(data, (returnValue) => {
           res.send(returnValue);
@@ -27,8 +28,24 @@ router.post('/', (req, res, next) => {
 
 router.post('/gen', (req, res, next) => {
   helpers.generate(req.body, (returnValue) => {
-    res.send(returnValue);
+    stringify(returnValue, function (err, fbReport) {
+      res.contentType('text/csv');
+      res.send({
+        fbReport
+      });
+    });
   });
+});
+
+router.post('/amz/gen', (req, res, next) => {
+  helpers.amzGenerate(req.body, (returnValue) => {
+    stringify(returnValue, function (err, fbReport) {
+      res.contentType('text/csv');
+      res.send({
+        fbReport
+      });
+    });
+  })
 });
 
 module.exports = router;

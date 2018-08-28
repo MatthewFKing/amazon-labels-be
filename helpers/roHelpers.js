@@ -9,6 +9,7 @@ exports.ro = (query, callback) => {
     let data = query.map(line => {
         return line[1];
     });
+    data.shift();
     callback([...new Set(data)]);
 }
 

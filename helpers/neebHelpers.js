@@ -1,5 +1,7 @@
 const headers = require('./headers.js').so;
 const fs = require('fs');
+const moment = require('moment');
+const today = moment().format('L');
 
 const neConverter = exports.neConverter = (data, callback) => {
   var XLSX = require('xlsx');
@@ -150,17 +152,17 @@ const ebConverter = exports.ebConverter = (data, callback) => {
 
       //Tax
       if (parseInt(ebReport[i][17]) > 0) {
-        soLine[18] = parseInt(ebReport[i][8]) + " - " + (parseInt(ebReport[i][17]) / (parseInt(ebReport[i][15]) * parseInt(ebReport[i][14])) * 100).toFixed(2) + "%";
+        soLine[18] = ebReport[i][8] + " - " + (parseInt(ebReport[i][17]) / (parseInt(ebReport[i][15]) * parseInt(ebReport[i][14])) * 100).toFixed(2) + "%";
       } else if (ebReport[i][17] === 0) {
         soLine[18] = "NONE";
       }
 
       soLine[20] = ebReport[i][0];
-      soLine[22] = new Date();
-      soLine[30] = new Date();
+      soLine[22] = today;
+      soLine[30] = today;
       soLine[34] = ebReport[i][3];
       soLine[35] = ebReport[i][4];
-      soLine[36] = new Date();
+      soLine[36] = today;
 
       if (ebReport[i][35] === "UPS Ground") {
         soLine[32] = "Ground"
@@ -191,14 +193,14 @@ const ebConverter = exports.ebConverter = (data, callback) => {
       //Tax
       if (parseInt(ebReport[i][17]) > 0) {
         itemLine[7] = "TRUE";
-        itemLine[8] = parseInt(ebReport[i][8]) + (parseInt(ebReport[i][17]) / (parseInt(ebReport[i][15]) * parseInt(ebReport[i][14])) * 100).toFixed(1);
+        itemLine[8] = ebReport[i][8] + (parseInt(ebReport[i][17]) / (parseInt(ebReport[i][15]) * parseInt(ebReport[i][14])) * 100).toFixed(1);
       } else if (ebReport[i][17] === 0) {
         itemLine[7] = "FALSE";
       }
 
       itemLine[9] = ebReport[i][11];
       itemLine[10] = "None";
-      itemLine[11] = new Date();
+      itemLine[11] = today;
       itemLine[12] = "True";
       itemLine[13] = "FALSE";
 
@@ -219,13 +221,13 @@ const ebConverter = exports.ebConverter = (data, callback) => {
 
       if (ebReport[i][17] > 0) {
         shipLine[7] = "TRUE";
-        shipLine[8] = ebReport[i][8] + (ebReport[i][17] / (ebReport[i][15] * ebReport[i][14]) * 100).toFixed(1);
+        shipLine[8] = ebReport[i][8] + (parseInt(ebReport[i][17]) / (parseInt(ebReport[i][15]) * parseInt(ebReport[i][14])) * 100).toFixed(1);
       } else if (ebReport[i][17] === 0) {
         shipLine[7] = "FALSE";
       }
 
       shipLine[10] = "None";
-      shipLine[11] = new Date();
+      shipLine[11] = today;
       shipLine[12] = "True";
       shipLine[13] = "FALSE";
 
@@ -251,10 +253,7 @@ exports.neebConverter = (data, callback) => {
   const ebData = { report: ebReport, clearedOrders: data.ebData.clearedOrders.split(',') };
 
   const neData = data.neData;
-
-
-
-
+  
   //callback(ebReport);
 
   neConverter(neData, (neReturn) => {
