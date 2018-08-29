@@ -159,7 +159,6 @@ app.post('/neebreport', (req, res, next) => {
 });
 
 app.post('/ebreport', (req, res, next) => {
-    console.log(req.id);
     neebHelpers.ebConverter(req.body, (returnValue) => {
         stringify(returnValue, function (err, fbReport) {
             res.contentType('text/csv');
@@ -168,6 +167,20 @@ app.post('/ebreport', (req, res, next) => {
             });
         });
     });
+});
+
+app.get('/nenum', (req, res, next) => {
+    completedNE.find().sort({ _id: -1 }).limit(10).exec((err, data) => {
+        res.json(data);
+    });
+});
+
+app.post('/neid', (req, res, next) => {
+    let ordersToDelete = req.body;
+    ordersToDelete.forEach(order => {
+        completedNE.find({ ID: order }).deleteOne().exec();
+    })
+    res.send('deleted')
 });
 
 app.use((err, req, res, next) => {

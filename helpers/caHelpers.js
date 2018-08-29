@@ -69,20 +69,7 @@ const generate = exports.generate = (data, callback) => {
     soLine[34] = order['Ship To Phone Number'];
     soLine[35] = order['Order Customer Email'];
     soLine[36] = order['Auto Void Date & Time'];
-
-    ////////////////////////////////////
-    // Shipping Method
-    if (order['Order Shipping Method'] === "Standard Shipping (5-7 business days)") {
-      soLine[32] = "Ground"
-    } else if (order['Order Shipping Method'] === "Expedited Shipping (3-5 business days)") {
-      soLine[32] = "3 Day Select"
-    } else if (order['Order Shipping Method'] === "Two-Day Shipping(2 business days)") {
-      soLine[32] = "2nd Day Air"
-    } else if (order['Order Shipping Method'] === "One-Day Shipping(Next day)") {
-      soLine[32] = "Next Day Air Saver"
-    } else {
-      soLine[32] = "N/A"
-    }
+    soLine[32] = "Worldwide Expedited"
 
     fbReport.push(soLine);
 

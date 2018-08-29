@@ -48,7 +48,7 @@ router.get('/ufnum', (req, res, next) => {
     if (err) return next(err);
     res.status(201);
     res.json(num);
-  })
+  });
 });
 
 /////////////////////////////////////////////
