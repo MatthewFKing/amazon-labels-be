@@ -18,20 +18,6 @@ mongoose.connect('mongodb://localhost/warehouse', {
     useNewUrlParser: true
 });
 
-const deleteFiles = (dir) => {
-    const directory = dir;
-
-    fs.readdir(directory, (err, files) => {
-        if (err) throw err;
-
-        for (const file of files) {
-            fs.unlink(path.join(directory, file), err => {
-                if (err) throw err;
-            });
-        }
-    });
-}
-
 app.use(bodyParser.urlencoded({
     limit: '1gb',
     extended: false
@@ -51,31 +37,36 @@ app.options('*', cors());
 
 const caRoute = require('./routes/ca');
 const roRoute = require('./routes/ro');
+const pdfRoute = require('./routes/pdf');
 app.use('/ro', roRoute);
 app.use('/ca', caRoute);
+app.use('/pdf', pdfRoute);
 
 /////////////////////////////////////////////
 //Amazon Label Generator
-app.get('/pdf', (req, res, next) => {
+app.post('/pdf/final', (req, res, next) => {
+    let time = req.body.time;
     console.log(req.ip);
     console.log(new Date().toLocaleTimeString());
-    fs.readFile('./myfile.pdf', function (err, data) {
+    fs.readFile(`./tmp/${time}-final.pdf`, function (err, data) {
         res.contentType("application/pdf");
         res.send(data);
+        deleteFiles('./cropped');
+        deleteFiles('./images');
+        deleteFiles('./tmp');
     });
-    deleteFiles('./cropped');
-    deleteFiles('./images');
+
 });
 
 app.post('/pdf', (req, res, next) => {
     let file = req.files.file;
-    let ip = req.ip;
-    file.mv(`./tmp/test.pdf`, function (err) {
+    let time = Date.now();
+    file.mv(`./tmp/${time}.pdf`, function (err) {
         if (err) {
             return res.status(500).send(err);
         } else {
-            helpers.pdfToPic(ip, function (returnValue) {
-                res.send(returnValue);
+            helpers.pdfToPic(time, function (time) {
+                res.json(time);
             })
         }
     });
