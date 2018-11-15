@@ -8,7 +8,6 @@ const helpers = require('./helpers/pdfHelpers');
 const neebHelpers = require('./helpers/neebHelpers');
 const fs = require('fs');
 const stringify = require('csv-stringify');
-const path = require('path');
 const mongoose = require('mongoose');
 const completedNE = require('./models/CompletedNE');
 const csv = require("csvtojson");
@@ -36,8 +35,10 @@ app.use(cors());
 app.options('*', cors());
 
 const caRoute = require('./routes/ca');
+const ukRoute = require('./routes/uk');
 const roRoute = require('./routes/ro');
 const pdfRoute = require('./routes/pdf');
+app.use('/uk', ukRoute);
 app.use('/ro', roRoute);
 app.use('/ca', caRoute);
 app.use('/pdf', pdfRoute);
@@ -179,7 +180,7 @@ app.use((err, req, res, next) => {
     res.status(500).send(err);
 });
 
-const port = process.env.PORT || 3030;
+const port = process.env.PORT || 3060;
 const server = http.createServer(app);
 server.listen(port);
 console.log("Server listening on:", port);

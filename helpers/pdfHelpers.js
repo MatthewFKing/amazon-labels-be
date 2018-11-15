@@ -23,3 +23,94 @@ exports.pdfToPic = (query, callback) => {
                 });
         });
 };
+
+exports.fnsku = (data, callback) => {
+    const HummusRecipe = require('hummus-recipe');
+    const bwipjs = require('bwip-js');
+    let fileArray = [];
+
+
+    const textOptions = { font: 'Arial', size: 12, color: "#FFFFFF" };
+
+    let currentFile = "output";
+    let count = 1;
+    console.log(data);
+    data.map(wo => {
+
+        bwipjs.toBuffer({
+            bcid: 'code128',       // Barcode type
+            text: wo.fnsku,    // Text to encode
+            scale: 1,               // 3x scaling factor
+            height: 20,              // Bar height, in millimeters
+            includetext: false,            // Show human-readable text
+            textxalign: 'center',        // Always good to set this
+        }, function (err, png) {
+            if (err) {
+
+            } else {
+                require("fs").writeFile(`./data/barcodes/${wo.woNum}.png`, png, 'base64', function (err) {
+                    for (let x = 1; x <= parseInt(wo.qty); x++) {
+                        console.log(count);
+                        
+                        fileArray.push(`./data/output-${count}.pdf`);
+                        if (count === 1 && x === 1) {
+                            const pdfDoc = new HummusRecipe('./data/FNSKULabel.pdf', `./data/output-${count}.pdf`);
+                            pdfDoc
+                                // edit 1st page
+                                .editPage(1)
+                                .text(wo.sku, 62, 61, textOptions) //SKU
+                                .text(wo.desc, 145, 18, { font: 'Arial', size: 12, color: "#FFFFFF", align: 'center center' }) //Desc
+                                .text(wo.asin, 65, 110, textOptions) //UPC
+                                .text(`FNSKU: ${wo.fnsku}`, 145, 212, { font: 'Arial', size: 12, color: "#000000", align: 'center center' }) //FNsku Barcode
+                                .image(`./data/barcodes/${wo.woNum}.png`, 145, 150, { align: 'center' })
+                                .endPage()
+                                // end and save
+                                .endPDF();
+                        } else {
+                            let pdfDoc = new HummusRecipe(`./data/output-${count - 1}.pdf`, `./data/tmp-${count}.pdf`);
+
+                            pdfDoc
+                                .insertPage(count-1, './data/FNSKULabel.pdf', 1)
+                                .endPage()
+                                // end and save
+                                .endPDF();
+                            pdfDoc = new HummusRecipe(`./data/tmp-${count}.pdf`, `./data/output-${count}.pdf`);
+                            
+                            pdfDoc
+                                .editPage(count)
+
+                                .text(wo.sku, 62, 61, textOptions) //SKU
+                                .text(wo.desc, 145, 18, { font: 'Arial', size: 12, color: "#FFFFFF", align: 'center center' }) //Desc
+                                .text(wo.asin, 65, 110, textOptions) //UPC
+                                .text(`FNSKU: ${wo.fnsku}`, 145, 212, { font: 'Arial', size: 12, color: "#000000", align: 'center center' }) //FNsku Barcode
+                                .image(`./data/barcodes/${wo.woNum}.png`, 145, 150, { align: 'center' })
+                                .endPage()
+                                // end and save
+                                .endPDF();
+                        }// }else {
+                        //     const pdfDoc = new HummusRecipe(`./data/output-${count - 1}.pdf`, `./data/output-${count}.pdf`);
+
+                        //     pdfDoc
+                        //         .insertPage(count-1, `./data/output-${count-1}.pdf`, 1)
+                        //         .endPage()
+                        //         // end and save
+                        //         .endPDF();
+                        // }
+                        count++;
+                    }
+
+                });
+            }
+        });
+    });
+
+
+    callback('done');
+}
+
+//FNKU Labels
+//form to enter in sku information
+//DB for SKU, FNSKU, Description, UPC
+//Edit PDF
+//Add barcode to PDF
+//preview PDF to print

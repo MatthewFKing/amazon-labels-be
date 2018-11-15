@@ -4,3 +4,5 @@
 /node_modules
 /myfile.pdf
 /token.json
+/client_secret.json
+/hummus-error.log

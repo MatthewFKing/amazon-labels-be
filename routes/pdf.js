@@ -3,6 +3,7 @@ const router = express.Router();
 const helpers = require('../helpers/pdfHelpers');
 const fs = require('fs');
 const path = require('path');
+const sheets = require('../helpers/sheets');
 
 const deleteFiles = (dir) => {
   const directory = dir;
@@ -42,6 +43,18 @@ router.post('/', (req, res, next) => {
       })
     }
   });
+});
+
+router.post('/fn', (req, res, next) => {
+  let data = req.body;
+
+  sheets.fnSku(data, function (woList) {
+    helpers.fnsku(woList, function (result) {
+      res.json(result);
+    });
+  });
+  
+  
 });
 
 
