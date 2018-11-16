@@ -27,12 +27,13 @@ exports.pdfToPic = (query, callback) => {
 exports.fnsku = (data, callback) => {
     const HummusRecipe = require('hummus-recipe');
     const bwipjs = require('bwip-js');
-    let fileArray = [];
-
+    const waitOn = require('wait-on');
 
     const textOptions = { font: 'Arial', size: 12, color: "#FFFFFF" };
-
-    let currentFile = "output";
+    let total = data.reduce((tally, wo) => {
+        return tally + parseInt(wo.qty);
+    }, 0)
+    console.log(total);
     let count = 1;
     console.log(data);
     data.map(wo => {
@@ -51,10 +52,9 @@ exports.fnsku = (data, callback) => {
                 require("fs").writeFile(`./data/barcodes/${wo.woNum}.png`, png, 'base64', function (err) {
                     for (let x = 1; x <= parseInt(wo.qty); x++) {
                         console.log(count);
-                        
-                        fileArray.push(`./data/output-${count}.pdf`);
+
                         if (count === 1 && x === 1) {
-                            const pdfDoc = new HummusRecipe('./data/FNSKULabel.pdf', `./data/output-${count}.pdf`);
+                            const pdfDoc = new HummusRecipe('./data/FNSKULabel.pdf', `./data/labels/output-${count}.pdf`);
                             pdfDoc
                                 // edit 1st page
                                 .editPage(1)
@@ -67,15 +67,16 @@ exports.fnsku = (data, callback) => {
                                 // end and save
                                 .endPDF();
                         } else {
-                            let pdfDoc = new HummusRecipe(`./data/output-${count - 1}.pdf`, `./data/tmp-${count}.pdf`);
+                            let pdfDoc = new HummusRecipe(`./data/labels/output-${count - 1}.pdf`, `./data/labels/tmp-${count}.pdf`);
 
                             pdfDoc
-                                .insertPage(count-1, './data/FNSKULabel.pdf', 1)
+                                .insertPage(count - 1, './data/FNSKULabel.pdf', 1)
                                 .endPage()
                                 // end and save
                                 .endPDF();
-                            pdfDoc = new HummusRecipe(`./data/tmp-${count}.pdf`, `./data/output-${count}.pdf`);
-                            
+
+                            pdfDoc = new HummusRecipe(`./data/labels/tmp-${count}.pdf`, `./data/labels/output-${count}.pdf`);
+
                             pdfDoc
                                 .editPage(count)
 
@@ -85,17 +86,8 @@ exports.fnsku = (data, callback) => {
                                 .text(`FNSKU: ${wo.fnsku}`, 145, 212, { font: 'Arial', size: 12, color: "#000000", align: 'center center' }) //FNsku Barcode
                                 .image(`./data/barcodes/${wo.woNum}.png`, 145, 150, { align: 'center' })
                                 .endPage()
-                                // end and save
                                 .endPDF();
-                        }// }else {
-                        //     const pdfDoc = new HummusRecipe(`./data/output-${count - 1}.pdf`, `./data/output-${count}.pdf`);
-
-                        //     pdfDoc
-                        //         .insertPage(count-1, `./data/output-${count-1}.pdf`, 1)
-                        //         .endPage()
-                        //         // end and save
-                        //         .endPDF();
-                        // }
+                        }
                         count++;
                     }
 
@@ -103,9 +95,12 @@ exports.fnsku = (data, callback) => {
             }
         });
     });
-
-
-    callback('done');
+    waitOn({
+        resources: [`./data/labels/output-${total}.pdf`]
+      }, function (err) {
+        callback({ file: `./data/labels/output-${total}.pdf` });
+      });
+    
 }
 
 //FNKU Labels

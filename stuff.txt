@@ -8,6 +8,7 @@ handling errors
 verify files are present before sending to BE
 move headers to DB or create objects
 updating parts file
+Shelf counter
 
 
 linking with spreadsheets

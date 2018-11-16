@@ -3,6 +3,7 @@ const router = express.Router();
 const helpers = require('../helpers/pdfHelpers');
 const fs = require('fs');
 const path = require('path');
+
 const sheets = require('../helpers/sheets');
 
 const deleteFiles = (dir) => {
@@ -47,15 +48,27 @@ router.post('/', (req, res, next) => {
 
 router.post('/fn', (req, res, next) => {
   let data = req.body;
+  deleteFiles('./data/labels');
 
   sheets.fnSku(data, function (woList) {
-    helpers.fnsku(woList, function (result) {
-      res.json(result);
-    });
+    if (woList.status === 'missing') {
+      res.json({ message: woList.message });
+    } else {
+      helpers.fnsku(woList.labelData, function (result) {
+        res.send(result.file);
+      });
+    }
   });
-  
-  
 });
+
+router.post('/fn-final', (req, res, next) => {
+  fs.readFile(req.body.file, function (err, data) {
+    res.contentType("application/pdf");
+    res.send(data);
+    deleteFiles('./data/barcodes');
+
+  });
+})
 
 
 module.exports = router;
