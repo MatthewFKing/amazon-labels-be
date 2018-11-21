@@ -81,7 +81,8 @@ exports.fbaStatus = (data, callback) => {
         let shippedQty = shipped.reduce((total, current) => {
           return total + Number(current.qty);
         }, 0);
-        console.log({ unshippedQty, shippedQty });
+        console.log(unshippedQty);
+        callback({ unshippedQty, shippedQty });
       });
 
     });

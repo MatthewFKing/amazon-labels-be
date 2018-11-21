@@ -6,6 +6,7 @@ const fileUpload = require('express-fileupload');
 const cors = require('cors');
 const helpers = require('./helpers/pdfHelpers');
 const neebHelpers = require('./helpers/neebHelpers');
+const sheets = require('./helpers/sheets');
 const fs = require('fs');
 const stringify = require('csv-stringify');
 const mongoose = require('mongoose');
@@ -70,6 +71,12 @@ app.post('/pdf', (req, res, next) => {
                 res.json(time);
             })
         }
+    });
+});
+
+app.get('/reports', (req, res, next) => {
+    sheets.fbaStatus('data', function (returnValue) {
+        res.json(returnValue);
     });
 });
 
