@@ -57,3 +57,40 @@ exports.fnSku = (data, callback) => {
     });
   });
 };
+
+exports.fbaStatus = (data, callback) => {
+  var GoogleSpreadsheet = require('google-spreadsheet');
+  const moment = require('moment');
+  var creds = require('../client_secret.json');
+  var doc = new GoogleSpreadsheet('1W3IeQTmiEpmt1_5V9nzJFrnUu5OE8T_1LeF7bGukizs');
+
+  //Unshipped Number
+  doc.useServiceAccountAuth(creds, function (err) {
+    doc.getRows(1, function (err, rows) {
+      let unshipped = rows.filter(row => {
+        return row.status !== 'SENT' && row.status !== 'DONE';
+      });
+      let unshippedQty = unshipped.reduce((total, current) => {
+        return total + Number(current.qty);
+      }, 0);
+
+      doc.getRows(4, function (err, tlRows) {
+        let shipped = tlRows.filter(row => {
+          return row.date === moment().subtract(1, 'days').format('L');
+        });
+        let shippedQty = shipped.reduce((total, current) => {
+          return total + Number(current.qty);
+        }, 0);
+        console.log({ unshippedQty, shippedQty });
+      });
+
+    });
+
+    //Shipped Yesterday
+    
+    
+    //Year to date Shipped (WOs vs Transfers)
+    
+
+  });
+}

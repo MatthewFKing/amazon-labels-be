@@ -49,7 +49,7 @@ router.post('/', (req, res, next) => {
 router.post('/fn', (req, res, next) => {
   let data = req.body;
   deleteFiles('./data/labels');
-
+  sheets.fbaStatus();
   sheets.fnSku(data, function (woList) {
     if (woList.status === 'missing') {
       res.json({ message: woList.message });
@@ -66,7 +66,6 @@ router.post('/fn-final', (req, res, next) => {
     res.contentType("application/pdf");
     res.send(data);
     deleteFiles('./data/barcodes');
-
   });
 })
 
