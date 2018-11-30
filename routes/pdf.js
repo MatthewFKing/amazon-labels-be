@@ -49,7 +49,7 @@ router.post('/', (req, res, next) => {
 router.post('/fn', (req, res, next) => {
   let data = req.body;
   deleteFiles('./data/labels');
-  sheets.fbaStatus();
+  //sheets.fbaStatus();
   sheets.fnSku(data, function (woList) {
     if (woList.status === 'missing') {
       res.json({ message: woList.message });
