@@ -4,7 +4,7 @@ const app = express();
 const bodyParser = require('body-parser');
 const fileUpload = require('express-fileupload');
 const cors = require('cors');
-const helpers = require('./helpers/pdfHelpers');
+const helpers = require('./helpers/testHelpers');
 const neebHelpers = require('./helpers/neebHelpers');
 const sheets = require('./helpers/sheets');
 const fs = require('fs');
@@ -22,9 +22,11 @@ app.use(bodyParser.urlencoded({
     limit: '1gb',
     extended: false
 }));
+
 app.use(bodyParser.json({
     limit: '50mb'
 }));
+
 app.use(bodyParser.raw({
     limit: '1gb',
     type: 'application/pdf'
@@ -78,6 +80,12 @@ app.get('/reports', (req, res, next) => {
     sheets.fbaStatus('data', function (returnValue) {
         res.json(returnValue);
     });
+});
+
+app.post('/test', (req, res, next) => {
+    helpers.test(req.body, function (returnValue) {
+        res.send(returnValue);
+      });
 });
 
 /////////////////////////////////////////////
@@ -187,7 +195,7 @@ app.use((err, req, res, next) => {
     res.status(500).send(err);
 });
 
-const port = process.env.PORT || 3060;
+const port = process.env.PORT || 3030;
 const server = http.createServer(app);
 server.listen(port);
 console.log("Server listening on:", port);

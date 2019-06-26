@@ -150,21 +150,47 @@ exports.partList = (data, callback) => {
     const partCSV = './reporttmp/parts.csv';
 
     let partJson = [];
+    // csv().fromFile(csvFilePath,function(err,result){
+
+    //     if(err){
+    //         console.log("An Error Has Occured");
+    //         console.log(err);  
+    //     } 
+    
+    //     //var json = result;
+    //     var fs = require('fs');
+    //     fs.writeFile ("./data/parttest.json", JSON.stringify(result), function(err) {
+    //       if (err) throw err;
+    //       callback('complete');
+    //       }
+    //   );
+    // });
     csv()
         .fromFile(partCSV)
-        .on('json', (json) => {
-            partJson.push(json);
+        .on('data', (data) => {
+            partJson.push(data.toString('utf8'));
+                
         })
         .on('done', (error) => {
-            callback('complete');
-            fs.unlink(`./data/part.json`, error => {
-                if (error) throw err;
-
-                fs.writeFile("./data/part.json", JSON.stringify(partJson), function (err) {
-                    if (err) throw err;
-                    console.log('done');
-                });
+            
+            
+            //let partData = partJson.slice(0, -1);
+            
+            console.log(partJson);
+            fs.writeFile("./data/parttest.json", JSON.stringify(partJson), function (err) {
+                if (err) throw err; 
+                console.log('done');
             });
+            callback('complete');
+            // fs.unlink(`./data/parttest.json`, error => {
+            //     if (error) throw error;
+
+            //     fs.writeFile("./data/parttest.json", JSON.stringify(partJson), function (err) {
+            //         if (err) throw err;
+                    
+            //         console.log('done');
+            //     });
+            // });
         })
 
 }

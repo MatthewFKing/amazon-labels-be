@@ -135,45 +135,45 @@ const ebConverter = exports.ebConverter = (data, callback) => {
 
       let soLine = headers.line.split(',');
 
-      soLine[3] = ebReport[i][2];
-      soLine[4] = ebReport[i][2];
-      soLine[5] = ebReport[i][2];
-      soLine[6] = `${ebReport[i][5]} ${ebReport[i][6]}`;
-      soLine[7] = ebReport[i][7];
-      soLine[8] = ebReport[i][8];
-      soLine[9] = ebReport[i][9];
-      soLine[10] = ebReport[i][10];
-      soLine[11] = ebReport[i][2];
-      soLine[12] = `${ebReport[i][5]} ${ebReport[i][6]}`;
-      soLine[13] = ebReport[i][7];
-      soLine[14] = ebReport[i][8];
-      soLine[15] = ebReport[i][9];
-      soLine[16] = ebReport[i][10];
+      soLine[3] = ebReport[i][3]; // Customer Name
+      soLine[4] = ebReport[i][3]; // Customer Name
+      soLine[5] = ebReport[i][3]; // Customer Name
+      soLine[6] = `${ebReport[i][6]} ${ebReport[i][7]}`; // Street Address
+      soLine[7] = ebReport[i][8]; // City
+      soLine[8] = ebReport[i][9]; // State
+      soLine[9] = ebReport[i][10]; // Zip
+      soLine[10] = ebReport[i][11]; // Country
+      soLine[11] = ebReport[i][3]; // Customer Name
+      soLine[12] = `${ebReport[i][6]} ${ebReport[i][7]}`; // Street Address
+      soLine[13] = ebReport[i][8]; // City
+      soLine[14] = ebReport[i][9]; // State
+      soLine[15] = ebReport[i][10]; // Zip
+      soLine[16] = ebReport[i][11]; // Country
 
       //Tax
-      if (parseInt(ebReport[i][17]) > 0) {
-        soLine[18] = ebReport[i][8] + " - " + (parseInt(ebReport[i][17]) / (parseInt(ebReport[i][15]) * parseInt(ebReport[i][14])) * 100).toFixed(2) + "%";
-      } else if (ebReport[i][17] === 0) {
+      if (parseInt(ebReport[i][27]) > 0) {
+        soLine[18] = ebReport[i][9] + " - " + (parseInt(ebReport[i][27]) / (parseInt(ebReport[i][25]) * parseInt(ebReport[i][24])) * 100).toFixed(2) + "%";
+      } else if (ebReport[i][27] === 0) {
         soLine[18] = "NONE";
       }
 
-      soLine[20] = ebReport[i][0];
-      soLine[22] = today;
-      soLine[30] = today;
-      soLine[34] = ebReport[i][3];
-      soLine[35] = ebReport[i][4];
+      soLine[20] = ebReport[i][0]; // Ebay Order ID
+      soLine[22] = today; // Date
+      soLine[30] = today; // Date
+      soLine[34] = ebReport[i][13]; // Phone
+      soLine[35] = ebReport[i][4]; // Email 
       soLine[36] = today;
 
-      if (ebReport[i][35] === "UPS Ground") {
+      if (ebReport[i][41] === "UPS Ground") {
         soLine[32] = "Ground"
-      } else if (ebReport[i][35] === "Expedited Shipping (3-5 business days)") {
+      } else if (ebReport[i][41] === "Expedited Shipping (3-5 business days)") {
         soLine[32] = "3 Day Select"
-      } else if (ebReport[i][35] === "UPS 2nd Day Air") {
+      } else if (ebReport[i][41] === "UPS 2nd Day Air") {
         soLine[32] = "2nd Day Air"
-      } else if (ebReport[i][35] === "One-Day Shipping(Next day)") {
+      } else if (ebReport[i][41] === "One-Day Shipping(Next day)") {
         soLine[32] = "Next Day Air Saver"
       } else {
-        soLine[32] = "N/A"
+        soLine[32] = "UPS Ground"
       }
 
       fbReport.push(soLine);
@@ -185,20 +185,20 @@ const ebConverter = exports.ebConverter = (data, callback) => {
 
       itemLine[0] = "Item";
       itemLine[1] = "10";
-      itemLine[2] = ebReport[i][13];
-      itemLine[4] = ebReport[i][14];
+      itemLine[2] = ebReport[i][22]; // Product SKU
+      itemLine[4] = ebReport[i][24]; // Qty
       itemLine[5] = "ea";
-      itemLine[6] = ebReport[i][15];
+      itemLine[6] = ebReport[i][25]; // Sale Price
 
       //Tax
-      if (parseInt(ebReport[i][17]) > 0) {
+      if (parseInt(ebReport[i][27]) > 0) {
         itemLine[7] = "TRUE";
-        itemLine[8] = ebReport[i][8] + (parseInt(ebReport[i][17]) / (parseInt(ebReport[i][15]) * parseInt(ebReport[i][14])) * 100).toFixed(1);
-      } else if (ebReport[i][17] === 0) {
+        itemLine[8] = ebReport[i][9] + (parseInt(ebReport[i][27]) / (parseInt(ebReport[i][25]) * parseInt(ebReport[i][24])) * 100).toFixed(1);
+      } else if (ebReport[i][27] === 0) {
         itemLine[7] = "FALSE";
       }
 
-      itemLine[9] = ebReport[i][11];
+      itemLine[9] = ebReport[i][20];
       itemLine[10] = "None";
       itemLine[11] = today;
       itemLine[12] = "True";
@@ -217,11 +217,11 @@ const ebConverter = exports.ebConverter = (data, callback) => {
       shipLine[3] = "Shipping Fees";
       shipLine[4] = "1";
       shipLine[5] = "ea";
-      shipLine[6] = ebReport[i][16];
+      shipLine[6] = ebReport[i][26]; // Shipping Cost
 
-      if (ebReport[i][17] > 0) {
+      if (ebReport[i][27] > 0) {
         shipLine[7] = "TRUE";
-        shipLine[8] = ebReport[i][8] + (parseInt(ebReport[i][17]) / (parseInt(ebReport[i][15]) * parseInt(ebReport[i][14])) * 100).toFixed(1);
+        shipLine[8] = ebReport[i][9] + (parseInt(ebReport[i][27]) / (parseInt(ebReport[i][25]) * parseInt(ebReport[i][24])) * 100).toFixed(1);
       } else if (ebReport[i][17] === 0) {
         shipLine[7] = "FALSE";
       }

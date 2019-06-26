@@ -121,6 +121,7 @@ const generate = exports.generate = (data, callback) => {
 }
 
 const amzGenerate = exports.amzGenerate = (data, callback) => {
+  const completedOrders = require('./models/CompletedOrders');
   let clearedOrders = data.clearedOrders;
   let allOrders = data.caAllOrders;
   let unshippedOrders = data.caUnshippedOrders;
@@ -184,8 +185,15 @@ const amzGenerate = exports.amzGenerate = (data, callback) => {
 
     fbReport.push(gstLine);
 
+    const completeOrder = new completedOrder({
+      ID: order,
+      type:'AMZ-CA'
+    });
+    completeOrder.save((err, id) => {
+      if (err) return next(err);
+    });
   });
 
   callback(fbReport);
-  
+
 }

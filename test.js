@@ -11,29 +11,29 @@
 // console.log(data['Tracks-Lot Number'])
 
 
-// const csvFilePath='./parttest.csv';
-// const csv=require('csvtojson')
+const csvFilePath='./reporttmp/parts.csv';
+const csv=require('csvtojson')
 
-// csv().fromFile(csvFilePath,function(err,result){
+csv().fromFile(csvFilePath,function(err,result){
 
-//     if(err){
-//         console.log("An Error Has Occured");
-//         console.log(err);  
-//     } 
+    if(err){
+        console.log("An Error Has Occured");
+        console.log(err);  
+    } 
 
-//     var json = result;
-//     var fs = require('fs');
-//     fs.writeFile ("input.json", JSON.stringify(json), function(err) {
-//       if (err) throw err;
-//       console.log('complete');
-//       }
-//   );
-// });
+    var json = result;
+    var fs = require('fs');
+    fs.writeFile ("parttest.json", JSON.stringify(json), function(err) {
+      if (err) throw err;
+      console.log('complete');
+      }
+  );
+});
 
-const moment = require('moment');
-// console.log(moment().format('L'));
+// const moment = require('moment');
+// // console.log(moment().format('L'));
 
-const time = "2018-09-06T06:59:59+00:00"
+// const time = "2018-09-06T06:59:59+00:00"
 
-const day = moment(time).format('L');
-console.log(day);
+// const day = moment(time).format('L');
+// console.log(day);
