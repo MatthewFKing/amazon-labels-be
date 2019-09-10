@@ -3,6 +3,7 @@ const roHeader2 = "Flag,PartNumber,PartQuantity,UOM,FulfillmentDate,Note,,,,,,,,
 const roPoLine = "TO,UFAUG62018,Ship,20,Amazon,Amazon,Amazon,16920 W. Commerce Dr,Goodyear  ,AZ,85338,UNITED STATES,CUK Powhatan,CUK Powhatan,1555 Standing Ridge Drive Suite A-1,Powhatan,VA,23139,UNITED STATES,TRUE,,,,,,UPS,";
 const roItemLine = "Item,,,ea,,,,,,,,,,,,,,,,,,,,,,,";
 
+
 const invHeader1 = "PartNumber,PartDescription,Location,Qty,UOM,Cost,Date,Note,Tracking-Lot Number,Tracking-Condtion,";
 const invItem = ",,Amazon-Amazon Shipping,,ea,0,,,,,";
 const invSN = "Serial Number,,,,,,,,,,"
@@ -29,7 +30,8 @@ const so = {
   item: "Item,10,,,,ea,,FALSE,,,None,,TRUE,FALSE,,,,,,,,,,,,,,,,,,,,,,,",
   shipping: "Item,60,SHIPPING,Shipping Fees,1,ea,,FALSE,,,None,,TRUE,FALSE,,,,,,,,,,,,,,,,,,,,,,,",
   gst: "Item,60,GST/HST,GST/HST,1,ea,,FALSE,,,None,,TRUE,FALSE,,,,,,,,,,,,,,,,,,,,,,,",
-  eWaste: "Item,60,E-waste Recycling Fee,E-waste Recycling Fee,1,ea,,FALSE,,,None,,TRUE,FALSE,,,,,,,,,,,,,,,,,,,,,,,"
+  eWaste: "Item,60,E-waste Recycling Fee,E-waste Recycling Fee,1,ea,,FALSE,,,None,,TRUE,FALSE,,,,,,,,,,,,,,,,,,,,,,,",
+  tax: "Item,70,Sales Tax,Sales Tax,1,ea,$63.00 ,FALSE,,,None,6/27/2019,TRUE,FALSE,,,,,,,,,,,,,,,,,,,,,,,"
 }
 
 exports.so = so;

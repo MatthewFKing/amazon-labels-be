@@ -151,14 +151,11 @@ const ebConverter = exports.ebConverter = (data, callback) => {
       soLine[16] = ebReport[i][11]; // Country
 
       //Tax
-      if (parseInt(ebReport[i][27]) > 0) {
-        soLine[18] = ebReport[i][9] + " - " + (parseInt(ebReport[i][27]) / (parseInt(ebReport[i][25]) * parseInt(ebReport[i][24])) * 100).toFixed(2) + "%";
-      } else if (ebReport[i][27] === 0) {
-        soLine[18] = "NONE";
-      }
+      
 
       soLine[20] = ebReport[i][0]; // Ebay Order ID
       soLine[22] = today; // Date
+      soLine[25] = "Paypal Balance";
       soLine[30] = today; // Date
       soLine[34] = ebReport[i][13]; // Phone
       soLine[35] = ebReport[i][4]; // Email 
@@ -173,10 +170,16 @@ const ebConverter = exports.ebConverter = (data, callback) => {
       } else if (ebReport[i][41] === "One-Day Shipping(Next day)") {
         soLine[32] = "Next Day Air Saver"
       } else {
-        soLine[32] = "UPS Ground"
+        soLine[32] = "Ground"
       }
 
       fbReport.push(soLine);
+
+      if (parseInt(ebReport[i][27].substring(1)) > 0) {
+        let taxLine = headers.tax.split(',');
+        taxLine[6] = ebReport[i][27];
+        fbReport.push(taxLine);
+      }
 
       //////////////////////////////////////////
       //// Item Line
@@ -190,13 +193,6 @@ const ebConverter = exports.ebConverter = (data, callback) => {
       itemLine[5] = "ea";
       itemLine[6] = ebReport[i][25]; // Sale Price
 
-      //Tax
-      if (parseInt(ebReport[i][27]) > 0) {
-        itemLine[7] = "TRUE";
-        itemLine[8] = ebReport[i][9] + (parseInt(ebReport[i][27]) / (parseInt(ebReport[i][25]) * parseInt(ebReport[i][24])) * 100).toFixed(1);
-      } else if (ebReport[i][27] === 0) {
-        itemLine[7] = "FALSE";
-      }
 
       itemLine[9] = ebReport[i][20];
       itemLine[10] = "None";
@@ -218,13 +214,6 @@ const ebConverter = exports.ebConverter = (data, callback) => {
       shipLine[4] = "1";
       shipLine[5] = "ea";
       shipLine[6] = ebReport[i][26]; // Shipping Cost
-
-      if (ebReport[i][27] > 0) {
-        shipLine[7] = "TRUE";
-        shipLine[8] = ebReport[i][9] + (parseInt(ebReport[i][27]) / (parseInt(ebReport[i][25]) * parseInt(ebReport[i][24])) * 100).toFixed(1);
-      } else if (ebReport[i][17] === 0) {
-        shipLine[7] = "FALSE";
-      }
 
       shipLine[10] = "None";
       shipLine[11] = today;
