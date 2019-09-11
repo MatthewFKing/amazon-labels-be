@@ -6,6 +6,7 @@ const fileUpload = require('express-fileupload');
 const cors = require('cors');
 const helpers = require('./helpers/testHelpers');
 const neebHelpers = require('./helpers/neebHelpers');
+const webHelpers = require('./helpers/webHelpers');
 const sheets = require('./helpers/sheets');
 const fs = require('fs');
 const stringify = require('csv-stringify');
@@ -75,6 +76,20 @@ app.use('/pdf', pdfRoute);
 //         }
 //     });
 // });
+
+
+/////////////////////////////////////////////
+//Web Order Report
+app.post('/web', (req, res, next) => {
+    webHelpers.create(req.body, function(returnValue) {
+        stringify(returnValue, function (err, fbReport) {
+            res.contentType('text/csv');
+            res.send({
+                fbReport
+            });
+        });
+    })
+});
 
 app.get('/reports', (req, res, next) => {
     sheets.fbaStatus('data', function (returnValue) {
