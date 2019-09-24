@@ -4,7 +4,11 @@ const moment = require('moment');
 const today = moment().format('L');
 
 const create = exports.create = (data, callback) => {
-  let selectedOrders = data.selectedOrders;
+  let selectedOrders = data.selectedOrders.map(order => {
+    return order[0];
+  });
+  
+  console.log(selectedOrders)
   let report = data.report;
   let fbReport = [];
 
@@ -17,22 +21,31 @@ const create = exports.create = (data, callback) => {
       //////////////////////////////////////////
       //// PO Line
 
+
+
       let soLine = headers.line.split(',');
 
-      soLine[3] = report[i][2]; // Customer Name
-      soLine[4] = report[i][2]; // Customer Name
-      soLine[5] = report[i][2]; // Customer Name
-      soLine[6] = report[i][15]; // Street Address
-      soLine[7] = report[i][11]; // City
-      soLine[8] = report[i][14]; // State
-      soLine[9] = report[i][13]; // Zip
-      soLine[10] = report[i][12]; // Country
-      soLine[11] = report[i][2]; // Customer Name
-      soLine[12] = report[i][15]; // Street Address
-      soLine[13] = report[i][11]; // City
-      soLine[14] = report[i][14]; // State
-      soLine[15] = report[i][13]; // Zip
-      soLine[16] = report[i][12]; // Country      
+      let soNum = data.selectedOrders.find(order => {
+        return order[0] === report[i][0];
+      });
+
+      console.log(soNum);
+
+      soLine[1] = soNum[1];
+      soLine[3] = `${report[i][17]} ${report[i][18]}`; // Customer Name
+      soLine[4] = `${report[i][17]} ${report[i][18]}`; // Customer Name
+      soLine[5] = `${report[i][17]} ${report[i][18]}`; // Customer Name
+      soLine[6] = report[i][16]; // Street Address
+      soLine[7] = report[i][12]; // City
+      soLine[8] = report[i][15]; // State
+      soLine[9] = report[i][14]; // Zip
+      soLine[10] = report[i][13]; // Country
+      soLine[11] = `${report[i][17]} ${report[i][18]}`; // Customer Name
+      soLine[12] = report[i][16]; // Street Address
+      soLine[13] = report[i][12]; // City
+      soLine[14] = report[i][15]; // State
+      soLine[15] = report[i][14]; // Zip
+      soLine[16] = report[i][13]; // Country      
       soLine[20] = report[i][0]; // Magento Order ID
       soLine[22] = today; // Date
       soLine[25] = "Paypal Balance";
@@ -60,8 +73,8 @@ const create = exports.create = (data, callback) => {
       itemLine[2] = itemSku[0]; // Product SKU
       itemLine[4] = report[i][4]; // Qty
       itemLine[5] = "ea";
-      itemLine[6] = report[i][19]; // Sale Price
-      itemLine[9] = report[i][2]; //Sales Order Note
+      itemLine[6] = report[i][20]; // Sale Price
+      itemLine[9] = report[i][1]; //Sales Order Note
       itemLine[10] = "None";
       itemLine[11] = today;
       itemLine[12] = "True";

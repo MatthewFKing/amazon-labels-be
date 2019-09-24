@@ -68,16 +68,19 @@ exports.fbaStatus = (data, callback) => {
   doc.useServiceAccountAuth(creds, function (err) {
     doc.getRows(1, function (err, rows) {
       let unshipped = rows.filter(row => {
-        return row.status !== 'SENT' && row.status !== 'DONE';
+        return row.pickstatus !== 'SENT' && row.pickstatus !== 'DONE';
       });
+
       let unshippedQty = unshipped.reduce((total, current) => {
         return total + Number(current.qty);
       }, 0);
 
       doc.getRows(4, function (err, tlRows) {
+        console.log(tlRows);
         let shipped = tlRows.filter(row => {
           return row.date === moment().subtract(1, 'days').format('L');
         });
+        console.log(shipped);
         let shippedQty = shipped.reduce((total, current) => {
           return total + Number(current.qty);
         }, 0);

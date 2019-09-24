@@ -12,7 +12,7 @@ doc.useServiceAccountAuth(creds, function (err) {
     let wip = rows.filter(row => {
       return row.status !== "SENT"
     });
-
+    console.log(wip);
     let wipQty = wip.reduce((total, current) => {
       return total + Number(current.qty);
     }, 0);

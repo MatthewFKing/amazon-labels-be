@@ -2,11 +2,11 @@ const headers = require('./headers.js').so;
 const moment = require('moment');
 
 const neCaConverter = exports.neCaConverter = (data, callback) => {
-  var XLSX = require('xlsx');
+  let XLSX = require('xlsx');
   const fs = require('fs');
   const timeStamp = data.timeStamp;
 
-  var workbook = XLSX.readFile(`./reporttmp/${timeStamp}CA.xls`);
+  let workbook = XLSX.readFile(`./reporttmp/${timeStamp}CA.xls`);
   let ws = workbook.Sheets['Order List'];
   let neReport = XLSX.utils.sheet_to_json(ws);
 
