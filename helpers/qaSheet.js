@@ -1,6 +1,7 @@
-//exports.qaLog = (data, callback) => {
+exports.qaLog = (data, callback) => {
   var GoogleSpreadsheet = require('google-spreadsheet');
   const moment = require('moment');
+  
   var creds = require('../client_secret.json');
   var doc = new GoogleSpreadsheet('1W3IeQTmiEpmt1_5V9nzJFrnUu5OE8T_1LeF7bGukizs');
 
@@ -79,11 +80,18 @@
           }
           entries.push(fbaentry);
         }
-        })
-        console.log(entries);
+        });
+        //console.log(entries.length);
+        callback(entries);
+        // entries.forEach(entry => {
+        //   const newEntry = new qaEntry(entry);
+        //   newEntry.save((err, id) => {
+        //     if (err) return console.log(err);
+        //   });
+        // });
       });
       
     });
   });
-//}
+}
 

@@ -14,6 +14,8 @@ const mongoose = require('mongoose');
 const completedNE = require('./models/CompletedNE');
 const csv = require("csvtojson");
 const waitOn = require('wait-on');
+const qaLog = require("./helpers/qaSheet").qaLog;
+const qaEntry = require('./models/QAEntry');
 
 mongoose.connect('mongodb://localhost/warehouse', {
     useNewUrlParser: true
@@ -77,6 +79,26 @@ app.use('/pdf', pdfRoute);
 //     });
 // });
 
+/////////////////////////////////////////////
+//Web Order Report
+app.get('/qalog', (req, res, next) => {
+    qaLog('data', (entries) => {
+        entries.forEach(entry => {
+            const newEntry = new qaEntry(entry);
+            newEntry.save((err, id) => {
+                if (err) return console.log(err);
+            });
+        });
+        res.send('done');
+    })
+});
+
+app.get('/qareport', (req, res, next) => {
+    qaEntry.find({techNumber: '43674645'}, (err, entries) => {
+        res.json(entries);
+
+    });
+})
 
 /////////////////////////////////////////////
 //Web Order Report
@@ -120,7 +142,7 @@ app.post('/neebreport', (req, res, next) => {
                     return handleError(err);
                 }
                 completedNE.find({}, function (err, ids) {
-                    var orderList = [];
+                    let orderList = [];
                     ids.forEach(id => orderList.push(id.ID));
 
                     if (req.body.ebReport) {

@@ -20,7 +20,7 @@ const qaEntrySchema = new Schema({
     checkedInBy: String
   },
   trackingNumber: String,
-  pointsValue: Number,
+  pointsValue: String,
   timeCheckedIn: String,
   notes: String,
   fullTest: String,
