@@ -25,9 +25,13 @@ const qaEntrySchema = new Schema({
   notes: String,
   fullTest: String,
   isThisMonth: Boolean,
-
-    
 });
+
+
+
+qaEntrySchema.statics.findByNumber = function(number) {
+  return this.find({ techNumber: number });
+}
 
 const qaEntry = mongoose.model('qaEntry', qaEntrySchema);
 module.exports = qaEntry;

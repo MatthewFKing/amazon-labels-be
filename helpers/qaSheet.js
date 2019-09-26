@@ -1,6 +1,7 @@
+const moment = require('moment');
 exports.qaLog = (data, callback) => {
   var GoogleSpreadsheet = require('google-spreadsheet');
-  const moment = require('moment');
+  
   
   var creds = require('../client_secret.json');
   var doc = new GoogleSpreadsheet('1W3IeQTmiEpmt1_5V9nzJFrnUu5OE8T_1LeF7bGukizs');
@@ -94,4 +95,48 @@ exports.qaLog = (data, callback) => {
     });
   });
 }
+const dates = [ 
+  '09/02/2019',
+  '09/03/2019',
+  '09/04/2019',
+  '09/05/2019',
+  '09/06/2019',
+  '09/09/2019',
+  '09/10/2019',
+  '09/11/2019',
+  '09/12/2019',
+  '09/13/2019',
+  '09/16/2019',
+  '09/17/2019',
+  '09/18/2019',
+  '09/19/2019',
+  '09/20/2019',
+  '09/23/2019',
+  '09/24/2019',
+  '09/25/2019',
+  '09/26/2019',
+];
 
+exports.singleTech = (data, callback) => {
+  const qaEntries = data;
+  let dates = qaEntries.map(entry => {
+    return moment(entry.date).format('L');
+    //return entry.date;
+  });
+  dates = [...new Set(dates)].sort();
+
+  let pointData = [];
+  dates.forEach((date, i) => {
+    let pointTotal = qaEntries.filter(entry => moment(entry.date).format('L') === date).reduce((total, line) => {
+      if (!isNaN(parseInt(line.pointsValue, 10))) {
+        return total + parseInt(line.pointsValue, 10);
+      } else {
+        return total + 0;
+      }
+  }, 0);
+  pointData.push([i, pointTotal]);
+  
+});
+  console.log(dates)
+  callback({dates, pointData});
+}

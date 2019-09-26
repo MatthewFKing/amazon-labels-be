@@ -15,7 +15,9 @@ const completedNE = require('./models/CompletedNE');
 const csv = require("csvtojson");
 const waitOn = require('wait-on');
 const qaLog = require("./helpers/qaSheet").qaLog;
+const singleTech = require("./helpers/qaSheet").singleTech;
 const qaEntry = require('./models/QAEntry');
+const tech = require('./models/Tech');
 
 mongoose.connect('mongodb://localhost/warehouse', {
     useNewUrlParser: true
@@ -81,20 +83,46 @@ app.use('/pdf', pdfRoute);
 
 /////////////////////////////////////////////
 //Web Order Report
-app.get('/qalog', (req, res, next) => {
-    qaLog('data', (entries) => {
-        entries.forEach(entry => {
-            const newEntry = new qaEntry(entry);
-            newEntry.save((err, id) => {
-                if (err) return console.log(err);
-            });
-        });
-        res.send('done');
+app.post('/qalog', async (req, res, next) => {
+    // qaLog('data', (entries) => {
+    //     entries.forEach(entry => {
+    //         const newEntry = new qaEntry(entry);
+    //         newEntry.save((err, id) => {
+    //             if (err) return console.log(err);
+    //         });
+    //     });
+    //     res.send('done');
+    // })
+
+    // console.log(req.body.number);
+    // res.send('done');
+    let qaEntries = await qaEntry.findByNumber(req.body.number);
+    singleTech(qaEntries, (returnData) => {
+        res.json(returnData);
     })
+
+});
+
+app.post('/addtech', async (req, res, next) => {
+    //console.log(req.body);
+    req.body.map(techInfo => {
+        const newTech = new tech(techInfo);
+        newTech.save((err, id) => {
+            if (err) return console.log(err);
+        })
+    })
+    res.send('got it')
+});
+
+app.get('/qainfo', async (req, res, next) => {
+    //console.log(req.body);
+    tech.find({}, (err, techs) => {
+        res.json(techs);
+    });
 });
 
 app.get('/qareport', (req, res, next) => {
-    qaEntry.find({techNumber: '43674645'}, (err, entries) => {
+    qaEntry.find({ techNumber: '43674645' }, (err, entries) => {
         res.json(entries);
 
     });
@@ -103,7 +131,7 @@ app.get('/qareport', (req, res, next) => {
 /////////////////////////////////////////////
 //Web Order Report
 app.post('/web', (req, res, next) => {
-    webHelpers.create(req.body, function(returnValue) {
+    webHelpers.create(req.body, function (returnValue) {
         stringify(returnValue, function (err, fbReport) {
             res.contentType('text/csv');
             res.send({
@@ -122,7 +150,7 @@ app.get('/reports', (req, res, next) => {
 app.post('/test', (req, res, next) => {
     helpers.test(req.body, function (returnValue) {
         res.send(returnValue);
-      });
+    });
 });
 
 /////////////////////////////////////////////
