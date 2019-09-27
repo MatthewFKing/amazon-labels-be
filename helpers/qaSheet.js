@@ -119,13 +119,14 @@ const dates = [
 
 exports.singleTech = (data, callback) => {
   const qaEntries = data;
-  let dates = qaEntries.map(entry => {
-    return moment(entry.date).format('L');
-    //return entry.date;
-  });
-  dates = [...new Set(dates)].sort();
+  // let dates = qaEntries.map(entry => {
+  //   return moment(entry.date).format('L');
+  //   //return entry.date;
+  // });
+  // dates = [...new Set(dates)].sort();
 
   let pointData = [];
+
   dates.forEach((date, i) => {
     let pointTotal = qaEntries.filter(entry => moment(entry.date).format('L') === date).reduce((total, line) => {
       if (!isNaN(parseInt(line.pointsValue, 10))) {
@@ -133,10 +134,10 @@ exports.singleTech = (data, callback) => {
       } else {
         return total + 0;
       }
-  }, 0);
-  pointData.push([i, pointTotal]);
-  
-});
-  console.log(dates)
+    }, 0);
+    pointData.push([i, pointTotal]);
+  });
+
+  console.log(pointData);
   callback({dates, pointData});
 }
