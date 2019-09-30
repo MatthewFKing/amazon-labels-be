@@ -84,23 +84,29 @@ app.use('/pdf', pdfRoute);
 /////////////////////////////////////////////
 //Web Order Report
 app.post('/qalog', async (req, res, next) => {
-    // qaLog('data', (entries) => {
-    //     entries.forEach(entry => {
-    //         const newEntry = new qaEntry(entry);
-    //         newEntry.save((err, id) => {
-    //             if (err) return console.log(err);
-    //         });
-    //     });
-    //     res.send('done');
-    // })
-
-    // console.log(req.body.number);
-    // res.send('done');
     let qaEntries = await qaEntry.findByNumber(req.body.number);
     singleTech(qaEntries, (returnData) => {
         res.json(returnData);
     })
+});
 
+app.post('/qasearch', async (req, res, next) => {
+    console.log(req.body)
+    res.json(req.body);
+})
+
+app.get('/updatelog', async (req, res, next) => {
+    const del = await qaEntry.deleteMany({isThisMonth: true});
+    
+    qaLog(del, (entries) => {
+        entries.forEach(entry => {
+            const newEntry = new qaEntry(entry);
+            newEntry.save((err, id) => {
+                if (err) return console.log(err);
+            });
+        });
+        res.json(entries.length)
+    });
 });
 
 app.post('/addtech', async (req, res, next) => {

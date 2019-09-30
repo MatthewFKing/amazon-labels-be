@@ -12,7 +12,7 @@ const qaEntrySchema = new Schema({
   sku: String,
   shippingMethod: String,
   mustShip: String,
-  techNumber: String,
+  techNumber: {type: String},
   qa: {
     blemishSpec: String,
     finalQA: String,
