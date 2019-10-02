@@ -8,19 +8,15 @@ const helpers = require('./helpers/testHelpers');
 const neebHelpers = require('./helpers/neebHelpers');
 const webHelpers = require('./helpers/webHelpers');
 const sheets = require('./helpers/sheets');
-const fs = require('fs');
 const stringify = require('csv-stringify');
 const mongoose = require('mongoose');
 const completedNE = require('./models/CompletedNE');
-const csv = require("csvtojson");
 const waitOn = require('wait-on');
-const qaLog = require("./helpers/qaSheet").qaLog;
-const singleTech = require("./helpers/qaSheet").singleTech;
-const qaEntry = require('./models/QAEntry');
-const tech = require('./models/Tech');
+
 
 mongoose.connect('mongodb://localhost/warehouse', {
-    useNewUrlParser: true
+    useNewUrlParser: true,
+    useUnifiedTopology: true
 });
 
 app.use(bodyParser.urlencoded({
@@ -46,93 +42,13 @@ const caRoute = require('./routes/ca');
 const ukRoute = require('./routes/uk');
 const roRoute = require('./routes/ro');
 const pdfRoute = require('./routes/pdf');
+const qaRoute = require('./routes/qa');
 app.use('/uk', ukRoute);
 app.use('/ro', roRoute);
 app.use('/ca', caRoute);
 app.use('/pdf', pdfRoute);
+app.use('/qa', qaRoute);
 
-/////////////////////////////////////////////
-//Amazon Label Generator
-// app.post('/pdf/final', (req, res, next) => {
-//     let time = req.body.time;
-//     console.log(req.ip);
-//     console.log(new Date().toLocaleTimeString());
-//     fs.readFile(`./tmp/${time}-final.pdf`, function (err, data) {
-//         res.contentType("application/pdf");
-//         res.send(data);
-//         deleteFiles('./cropped');
-//         deleteFiles('./images');
-//         deleteFiles('./tmp');
-//     });
-
-// });
-
-// app.post('/pdf', (req, res, next) => {
-//     let file = req.files.file;
-//     let time = Date.now();
-//     file.mv(`./tmp/${time}.pdf`, function (err) {
-//         if (err) {
-//             return res.status(500).send(err);
-//         } else {
-//             helpers.pdfToPic(time, function (time) {
-//                 res.json(time);
-//             })
-//         }
-//     });
-// });
-
-/////////////////////////////////////////////
-//Web Order Report
-app.post('/qalog', async (req, res, next) => {
-    let qaEntries = await qaEntry.findByNumber(req.body.number);
-    singleTech(qaEntries, (returnData) => {
-        res.json(returnData);
-    })
-});
-
-app.post('/qasearch', async (req, res, next) => {
-    console.log(req.body)
-    res.json(req.body);
-})
-
-app.get('/updatelog', async (req, res, next) => {
-    const del = await qaEntry.deleteMany({isThisMonth: true});
-    
-    qaLog(del, (entries) => {
-        entries.forEach(entry => {
-            const newEntry = new qaEntry(entry);
-            newEntry.save((err, id) => {
-                if (err) return console.log(err);
-            });
-        });
-        res.json(entries.length)
-    });
-});
-
-app.post('/addtech', async (req, res, next) => {
-    //console.log(req.body);
-    req.body.map(techInfo => {
-        const newTech = new tech(techInfo);
-        newTech.save((err, id) => {
-            if (err) return console.log(err);
-        })
-    })
-    res.send('got it')
-});
-
-app.get('/qainfo', async (req, res, next) => {
-    //console.log(req.body);
-    tech.find({}, (err, techs) => {
-        res.json(techs);
-    });
-});
-
-app.get('/qareport', (req, res, next) => {
-    qaEntry.find({ techNumber: '43674645' }, (err, entries) => {
-        res.json(entries);
-
-    });
-})
 
 /////////////////////////////////////////////
 //Web Order Report

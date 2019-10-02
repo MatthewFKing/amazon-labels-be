@@ -4,33 +4,33 @@ const Schema = mongoose.Schema;
 const qaEntrySchema = new Schema({
 
   date: { type: Date },
-  fbStatus: String,
-  orderID: String,
-  invoiceNumber: String,
+  fb_status: String,
+  order_id: String,
+  invoice_number: String,
   serial: String,
   model: String,
   sku: String,
-  shippingMethod: String,
-  mustShip: String,
-  techNumber: {type: String},
+  shipping_method: String,
+  must_ship: String,
+  tech_number: {type: String},
   qa: {
-    blemishSpec: String,
-    finalQA: String,
-    checkedAt: String,
-    checkedInBy: String
+    blemish_spec: String,
+    final_qa: String,
+    checked_at: String,
+    checked_in_by: String
   },
-  trackingNumber: String,
-  pointsValue: String,
-  timeCheckedIn: String,
+  tracking_number: String,
+  points_value: String,
+  time_checked_in: String,
   notes: String,
-  fullTest: String,
-  isThisMonth: Boolean,
+  full_test: String,
+  this_month: Boolean,
 });
 
 
 
 qaEntrySchema.statics.findByNumber = function(number) {
-  return this.find({ techNumber: number });
+  return this.find({ tech_number: number });
 }
 
 const qaEntry = mongoose.model('qaEntry', qaEntrySchema);
