@@ -6,6 +6,7 @@ const qaEntry = require('../models/QAEntry');
 const tech = require('../models/Tech');
 const qaArchive = require("../helpers/qaSheet").archiveLog;
 const fbaArchive = require("../helpers/qaSheet").archiveFbaLog;
+const prodReports = require("../helpers/prodReports");
 
 router.get('/', (req, res, next) => {
   res.send('qa');
@@ -23,6 +24,14 @@ router.get('/', (req, res, next) => {
 //     res.json(entries.length);
 //   });
 // });
+
+
+router.get('/reports', async(req, res, next) => {
+  const list = await qaEntry.find({});
+  prodReports.workingDays(list, (returnData) => {
+    res.json(returnData);
+  });
+})
 
 router.get('/archive', async (req, res, next) => {
   fbaArchive('data', (entries) =>{
