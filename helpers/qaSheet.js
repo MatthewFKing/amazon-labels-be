@@ -138,7 +138,6 @@ exports.singleTech = (data, callback) => {
     pointData.push([i, pointTotal]);
   });
 
-  console.log(pointData);
   callback({ dates, pointData });
 }
 

@@ -27,7 +27,7 @@ const qaEntrySchema = new Schema({
   this_month: Boolean,
 });
 
-
+//Add FBA or Prod field
 
 qaEntrySchema.statics.findByNumber = function(number) {
   return this.find({ tech_number: number });

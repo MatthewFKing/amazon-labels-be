@@ -12,21 +12,16 @@ router.get('/', (req, res, next) => {
   res.send('qa');
 });
 
-
-// router.get('/archive', async (req, res, next) => {
-//   qaArchive('data', (entries) =>{
-//     entries.forEach(entry => {
-//       const newEntry = new qaEntry(entry);
-//       newEntry.save((err, id) => {
-//           if (err) return console.log(`${err} at ${id}`);
-//       });
-//   });
-//     res.json(entries.length);
-//   });
-// });
+router.get('/techreport', async (req, res, next) => {
+  prodReports.techReport('data', (returnData) => {
+    res.json(returnData);
+  })
+})
 
 
 router.get('/reports', async(req, res, next) => {
+  console.log(req.ip);
+  console.log('/reports')
   const list = await qaEntry.find({});
   prodReports.workingDays(list, (returnData) => {
     res.json(returnData);
@@ -34,6 +29,8 @@ router.get('/reports', async(req, res, next) => {
 })
 
 router.get('/archive', async (req, res, next) => {
+  console.log(req.ip);
+  console.log('/archive')
   fbaArchive('data', (entries) =>{
     entries.forEach(entry => {
             const newEntry = new qaEntry(entry);
@@ -46,6 +43,8 @@ router.get('/archive', async (req, res, next) => {
   });
 
 router.post('/qalog', async (req, res, next) => {
+  console.log(req.ip);
+  console.log('/qalog')
   let qaEntries = await qaEntry.findByNumber(req.body.number);
   singleTech(qaEntries, (returnData) => {
       res.json(returnData);
@@ -53,11 +52,15 @@ router.post('/qalog', async (req, res, next) => {
 });
 
 router.post('/qasearch', async (req, res, next) => {
+  console.log(req.ip);
+  console.log('/qasearch')
   const match = await qaEntry.find({ [req.body.type]: req.body.query });
   res.json(match);
 });
 
 router.get('/updatelog', async (req, res, next) => {
+  console.log(req.ip);
+  console.log('/updatelog')
   const del = await qaEntry.deleteMany({ this_month: true });
   
   qaLog(del, (entries) => {
@@ -72,6 +75,8 @@ router.get('/updatelog', async (req, res, next) => {
 });
 
 router.post('/addtech', async (req, res, next) => {
+  console.log(req.ip);
+  console.log('/addtech')
   //console.log(req.body);
   req.body.map(techInfo => {
       const newTech = new tech(techInfo);
@@ -83,11 +88,15 @@ router.post('/addtech', async (req, res, next) => {
 });
 
 router.get('/updatemonth', async (req, res, next) => {
+  console.log(req.ip);
+  console.log('/updatemonth')
   const update = await qaEntry.updateMany({this_month: true}, {this_month: false});
   res.json(update.nModified);
 });
 
 router.get('/qainfo', async (req, res, next) => {
+  console.log(req.ip);
+  console.log('/qainfo')
   //console.log(req.body);
   tech.find({}, (err, techs) => {
       res.json(techs);
