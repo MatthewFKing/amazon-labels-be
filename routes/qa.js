@@ -12,8 +12,8 @@ router.get('/', (req, res, next) => {
   res.send('qa');
 });
 
-router.get('/techreport', async (req, res, next) => {
-  prodReports.techReport('data', (returnData) => {
+router.post('/techreport', async (req, res, next) => {
+  prodReports.techReport(req.body.number, (returnData) => {
     res.json(returnData);
   })
 })

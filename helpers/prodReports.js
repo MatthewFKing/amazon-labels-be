@@ -59,19 +59,22 @@ workingDays = (data) => {
     let points = dailyPoints.filter(entry => moment(entry[0]).week() === week).reduce((total, day) => {
         return total + parseInt(day[1], 10);
     }, 0);
-    weeklyPointsTotal.push([points, week])
+    weeklyPointsTotal.push([week, points])
   });
 
   //console.log(weeklyPoints);
   return({ dailyPoints, weeklyPointsTotal });
 }
 
-exports.techReport = async (techEntries, callback) => {
-  let dataList = await qaEntry.find({tech_number: '13341839'});
+exports.techReport = async (number, callback) => {
+  let dataList = await qaEntry.find({tech_number: number});
   let report = workingDays(dataList);
-  let bestDay = report.dailyPoints.reduce((current, next, i) => {
+
+  let bestDayIndex = report.dailyPoints.reduce((current, next, i) => {
     return (next[1] > current) ? i : current;
   },0)
+
+  let bestDay = report.dailyPoints[bestDayIndex]
 
   let totalPoints = report.dailyPoints.reduce((a, b) => {
     return a+b[1];
@@ -86,11 +89,12 @@ exports.techReport = async (techEntries, callback) => {
     bestDay,
     totalPoints,
     daysWorked: totalDaysWorked.length,
-    prodNumbers: report
-
+    prodPoints: report,
+    prodUnits: unitTotal(dataList),
+    currentMonth: currentMonth(report, 8)
   }
   //console.log()
-  callback(unitTotal(dataList));
+  callback(techReport);
 }
 
 unitTotal = (data) => {
@@ -118,6 +122,18 @@ unitTotal = (data) => {
   });
 
   return {dailyTotal, weeklyTotal};
+}
+
+currentMonth = (data, month) => {
+  const days = data.dailyPoints.filter(entry => {
+    return moment(entry[0]).month() === month;
+  });
+
+  const weeks = data.weeklyPointsTotal.filter(entry => {
+    return moment(moment().week(entry[0])).month() === month
+  });
+
+  return {days, weeks};
 }
 
 
