@@ -1,0 +1,10 @@
+
+> hummus@1.0.90 install C:\Users\Inventory\Documents\warehouse-beta-2\be\node_modules\hummus
+> node-pre-gyp install --fallback-to-build $EXTRA_NODE_PRE_GYP_FLAGS
+
+[hummus] Success: "C:\Users\Inventory\Documents\warehouse-beta-2\be\node_modules\hummus\binding\hummus.node" is installed via remote
++ react-dom@16.10.2
++ react-dates@21.2.0
++ moment@2.24.0
++ react@16.10.2
+added 181 packages, removed 83 packages and updated 72 packages in 22.241s

@@ -7,6 +7,7 @@ const tech = require('../models/Tech');
 const qaArchive = require("../helpers/qaSheet").archiveLog;
 const fbaArchive = require("../helpers/qaSheet").archiveFbaLog;
 const prodReports = require("../helpers/prodReports");
+const moment = require('moment');
 
 router.get('/', (req, res, next) => {
   res.send('qa');
@@ -54,7 +55,26 @@ router.post('/qalog', async (req, res, next) => {
 router.post('/qasearch', async (req, res, next) => {
   console.log(req.ip);
   console.log('/qasearch')
-  const match = await qaEntry.find({ [req.body.type]: req.body.query });
+  const { type, date } = req.body;
+  const query = req.body.query;
+
+  
+  let finder = {};
+  if (type && query) {
+    let searchList = [];
+    query.map(value => {
+      searchList.push({[type]: { "$regex": value, "$options": "i" }})
+    })
+    console.log(searchList);
+    //finder[type] = { "$regex": query, "$options": "i" }
+    finder['$or'] = searchList
+  }
+  if (date) {
+    finder.date = {"$gte": date.start, "$lt": date.end};
+  }
+  //console.log(finder)
+
+  const match = await qaEntry.find(finder).sort({date: 1});
   res.json(match);
 });
 

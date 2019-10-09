@@ -76,15 +76,15 @@ exports.fbaStatus = (data, callback) => {
       }, 0);
 
       doc.getRows(4, function (err, tlRows) {
-        console.log(tlRows);
+        //console.log(tlRows);
         let shipped = tlRows.filter(row => {
           return row.date === moment().subtract(1, 'days').format('L');
         });
-        console.log(shipped);
+        //console.log(shipped);
         let shippedQty = shipped.reduce((total, current) => {
           return total + Number(current.qty);
         }, 0);
-        console.log(unshippedQty);
+        //console.log(unshippedQty);
         callback({ unshippedQty, shippedQty });
       });
 
