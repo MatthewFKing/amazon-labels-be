@@ -8,6 +8,11 @@ const qaArchive = require("../helpers/qaSheet").archiveLog;
 const fbaArchive = require("../helpers/qaSheet").archiveFbaLog;
 const prodReports = require("../helpers/prodReports");
 const moment = require('moment');
+const schedule = require('node-schedule');
+
+
+
+
 
 router.get('/', (req, res, next) => {
   res.send('qa');
@@ -84,14 +89,28 @@ router.get('/updatelog', async (req, res, next) => {
   const del = await qaEntry.deleteMany({ this_month: true });
   
   qaLog(del, (entries) => {
-      entries.forEach(entry => {
-          const newEntry = new qaEntry(entry);
-          newEntry.save((err, id) => {
-              if (err) return console.log(err);
-          });
-      });
-      res.json(entries.length)
+      // entries.forEach(entry => {
+      //     const newEntry = new qaEntry(entry);
+      //     newEntry.save((err, id) => {
+      //         if (err) return console.log(err);
+      //     });
+      // });
+      res.json(entries)
   });
+});
+
+const j = schedule.scheduleJob('*/10 * * * *', async () => {
+  console.log('updatelog')
+  const del = await qaEntry.deleteMany({ this_month: true });
+  qaLog(del, (entries) => {
+    entries.forEach(entry => {
+        const newEntry = new qaEntry(entry);
+        newEntry.save((err, id) => {
+            if (err) return console.log(err);
+        });
+    });
+    console.log(entries.length);
+});
 });
 
 router.post('/addtech', async (req, res, next) => {

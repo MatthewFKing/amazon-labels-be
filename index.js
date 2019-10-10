@@ -49,7 +49,6 @@ app.use('/ca', caRoute);
 app.use('/pdf', pdfRoute);
 app.use('/qa', qaRoute);
 
-
 /////////////////////////////////////////////
 //Web Order Report
 app.post('/web', (req, res, next) => {

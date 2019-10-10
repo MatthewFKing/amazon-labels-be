@@ -38,7 +38,9 @@ exports.qaLog = (data, callback) => {
             points_value: row._db1zf,
             time_checked_in: time,
             notes: row.notes,
-            this_month: moment(row.date, "MM-DD-YYYY").isSame(moment(), 'month')
+            this_month: moment(row.date, "MM-DD-YYYY").isSame(moment(), 'month'),
+            fulfillment_type: 'Production'
+            
           }
 
           entries.push(entry);
@@ -77,7 +79,8 @@ exports.qaLog = (data, callback) => {
               time_checked_in: time,
               notes: row.notes,
               full_test: row.fulltest,
-              this_month: moment(row.date, "MM-DD-YYYY").isSame(moment(), 'month')
+              this_month: moment(row.date, "MM-DD-YYYY").isSame(moment(), 'month'),
+              fulfillment_type: 'FBA'
             }
             entries.push(fbaentry);
           }

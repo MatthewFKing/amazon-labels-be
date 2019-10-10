@@ -25,6 +25,7 @@ const qaEntrySchema = new Schema({
   notes: String,
   full_test: String,
   this_month: Boolean,
+  fulfillment_type: String,
 });
 
 //Add FBA or Prod field
