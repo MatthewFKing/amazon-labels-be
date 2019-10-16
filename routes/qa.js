@@ -11,9 +11,6 @@ const moment = require('moment');
 const schedule = require('node-schedule');
 
 
-
-
-
 router.get('/', (req, res, next) => {
   res.send('qa');
 });
@@ -23,7 +20,6 @@ router.post('/techreport', async (req, res, next) => {
     res.json(returnData);
   })
 })
-
 
 router.get('/reports', async(req, res, next) => {
   console.log(req.ip);
@@ -68,7 +64,7 @@ router.post('/qasearch', async (req, res, next) => {
   if (type && query) {
     let searchList = [];
     query.map(value => {
-      searchList.push({[type]: { "$regex": value, "$options": "i" }})
+      searchList.push({ [type]: { "$regex": value, "$options": "i" } })
     })
     console.log(searchList);
     //finder[type] = { "$regex": query, "$options": "i" }
@@ -79,7 +75,7 @@ router.post('/qasearch', async (req, res, next) => {
   }
   //console.log(finder)
 
-  const match = await qaEntry.find(finder).sort({date: 1});
+  const match = await qaEntry.find(finder).sort({ date: 1 });
   res.json(match);
 });
 
@@ -99,7 +95,7 @@ router.get('/updatelog', async (req, res, next) => {
   });
 });
 
-const j = schedule.scheduleJob('*/10 * * * *', async () => {
+const j = schedule.scheduleJob('*/30 * * * *', async () => {
   console.log('updatelog')
   const del = await qaEntry.deleteMany({ this_month: true });
   qaLog(del, (entries) => {

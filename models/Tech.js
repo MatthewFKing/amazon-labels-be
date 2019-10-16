@@ -5,6 +5,7 @@ const techSchema = new Schema({
 
   name: String,
   number: String,
+  active: Boolean,
     
 });
 

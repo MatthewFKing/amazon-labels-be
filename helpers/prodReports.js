@@ -136,7 +136,9 @@ currentMonth = (data, month) => {
   return {days, weeks};
 }
 
+paginate = (data, limit) => {
 
+}
 
 //points per
   //tech
