@@ -18,8 +18,8 @@ router.get('/', (req, res, next) => {
 router.post('/techreport', async (req, res, next) => {
   prodReports.techReport(req.body.number, (returnData) => {
     res.json(returnData);
-  })
-})
+  });
+});
 
 router.get('/reports', async(req, res, next) => {
   console.log(req.ip);
@@ -28,7 +28,7 @@ router.get('/reports', async(req, res, next) => {
   prodReports.workingDays(list, (returnData) => {
     res.json(returnData);
   });
-})
+});
 
 router.get('/archive', async (req, res, next) => {
   console.log(req.ip);
@@ -65,7 +65,7 @@ router.post('/qasearch', async (req, res, next) => {
     let searchList = [];
     query.map(value => {
       searchList.push({ [type]: { "$regex": value, "$options": "i" } })
-    })
+    });
     console.log(searchList);
     //finder[type] = { "$regex": query, "$options": "i" }
     finder['$or'] = searchList

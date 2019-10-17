@@ -192,7 +192,7 @@ exports.archiveLog = (data, callback) => {
 
 exports.archiveLog = (data, callback) => {
 
-  const logData = require('../data/qa_prod_archive.json');
+  const logData = require('../data/2018_qa_prod_archive.json');
   console.log(logData.length);
   
 
@@ -236,7 +236,7 @@ exports.archiveLog = (data, callback) => {
 
 exports.archiveFbaLog = (data, callback) => {
 
-  const logData = require('../data/qa_fba_archive.json');
+  const logData = require('../data/2018_qa_fba_archive.json');
   console.log(logData.length);
   
 
