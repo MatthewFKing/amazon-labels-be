@@ -6,6 +6,10 @@ const techSchema = new Schema({
   name: String,
   number: String,
   active: Boolean,
+  team: {
+    type: String,
+    enum: ['A1', 'A2', 'B']
+  },
     
 });
 

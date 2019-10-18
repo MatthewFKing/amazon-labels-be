@@ -75,7 +75,7 @@ router.post('/qasearch', async (req, res, next) => {
   }
   //console.log(finder)
 
-  const match = await qaEntry.find(finder).sort({ date: 1 });
+  const match = await qaEntry.find(finder).sort({ date: 1 }).limit(5000);
   res.json(match);
 });
 
