@@ -58,7 +58,6 @@ router.post('/qasearch', async (req, res, next) => {
   console.log('/qasearch')
   const { type, date } = req.body;
   const query = req.body.query;
-
   
   let finder = {};
   if (type && query) {

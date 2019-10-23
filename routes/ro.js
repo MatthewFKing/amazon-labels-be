@@ -4,6 +4,7 @@ const stringify = require('csv-stringify');
 const ufNumber = require('../models/UF');
 const helpers = require('../helpers/roHelpers');
 const waitOn = require('wait-on');
+const part = require('../models/Parts');
 
 
 /////////////////////////////////////////////
@@ -53,22 +54,20 @@ router.get('/ufnum', (req, res, next) => {
 
 /////////////////////////////////////////////
 //Removal Order Update Parts List
-router.post('/partlist', (req, res, next) => {
-  const file = req.files.file;
+router.post('/partlist', async (req, res, next) => {
+  //let parts = await req.body;
+  const del = await part.deleteMany({});
+  console.log(req.body.data)
+  helpers.partList(req.body.data, (returnData) => {
+      part.insertMany(returnData)
+        .then(docs => {
 
-  file.mv('./reporttmp/parts.csv')
-    .then(file => {
-      waitOn({
-        resources: [`./reporttmp/parts.csv`]
-      }, function (err) {
-        if (err) {
-          return handleError(err)
-        }
-        helpers.partList('data', (returnValue) => {
-          res.send(returnValue);
         })
-      });
-    });
+        .catch(err => {
+          console.log(err)
+        });
+    res.json(del.deletedCount);
+  })
 });
 
 module.exports = router;

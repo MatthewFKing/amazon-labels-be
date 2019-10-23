@@ -3,6 +3,7 @@ const partsExport = require('../data/part.json');
 const headers = require('./headers.js');
 const fs = require('fs');
 
+
 ////////////////////////////////
 // Send list of POs back to client
 exports.ro = (query, callback) => {
@@ -146,51 +147,96 @@ const fbRoReport = (parts) => {
 //////////////////////////////
 // Update Parts List
 exports.partList = (data, callback) => {
-    const csv = require('csvtojson');
-    const partCSV = './reporttmp/parts.csv';
+    //console.log(Object.keys(data));
+    let parts = data.split(/\n(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(line => {
+        return line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(text => {
+            return text.replace(/^"(.*)"$/, '$1');
+        });
+    });
 
-    let partJson = [];
-    // csv().fromFile(csvFilePath,function(err,result){
+    callback(addParts(parts));
+}
 
-    //     if(err){
-    //         console.log("An Error Has Occured");
-    //         console.log(err);  
-    //     } 
-    
-    //     //var json = result;
-    //     var fs = require('fs');
-    //     fs.writeFile ("./data/parttest.json", JSON.stringify(result), function(err) {
-    //       if (err) throw err;
-    //       callback('complete');
-    //       }
-    //   );
-    // });
-    csv()
-        .fromFile(partCSV)
-        .on('data', (data) => {
-            partJson.push(data.toString('utf8'));
-                
-        })
-        .on('done', (error) => {
-            
-            
-            //let partData = partJson.slice(0, -1);
-            
-            console.log(partJson);
-            fs.writeFile("./data/parttest.json", JSON.stringify(partJson), function (err) {
-                if (err) throw err; 
-                console.log('done');
-            });
-            callback('complete');
-            // fs.unlink(`./data/parttest.json`, error => {
-            //     if (error) throw error;
 
-            //     fs.writeFile("./data/parttest.json", JSON.stringify(partJson), function (err) {
-            //         if (err) throw err;
-                    
-            //         console.log('done');
-            //     });
-            // });
-        })
-
+const addParts = (partsToAdd) => {
+    let partsList = [];
+    partsToAdd.forEach(row => {
+        if (row[0] !== "PartNumber" && row[0] !== "") {
+            let partObj = {
+                part_number: row[0],
+                part_description: row[1],
+                part_detail: row[2],
+                uom: row[3],
+                part_type: row[5],
+                active: row[6],
+                abc_code: row[7],
+                weight: row[8],
+                weight_uom: row[9],
+                width: row[10],
+                height: row[11],
+                length: row[12],
+                size_uom: row[13],
+                primary_tracking: row[14],
+                tracks_lot_number: row[18],
+                tracks_serial_number: row[19],
+                tracks_asset_tag: row[20],
+                tracks_condition: row[21],
+                tracks_brang: row[22],
+                cf_mpn: row[23],
+                cf_max_spec_needed: row[24],
+                cf_integration_manual_needed: row[25],
+                cf_raid_image_needed: row[26],
+                cf_cpu_type: row[27],
+                cf_processor: row[28],
+                cf_cpu_base_frequency: row[29],
+                cf_screen_size: row[30],
+                cf_display_type: row[31],
+                cf_display_long_form: row[32],
+                cf_screen_resolution: row[33],
+                cf_touchscreen: row[34],
+                cf_ips: row[35],
+                cf_120hz: row[36],
+                cf_144hz: row[37],
+                cf_240hz: row[38],
+                cf_5ms_response_time: row[39],
+                cf_3ms_response_time: row[40],
+                cf_g_sync: row[41],
+                cf_graphics_card: row[42],
+                cf_vram: row[43],
+                cf_vr_ready: row[44],
+                cf_ram_size: row[45],
+                cf_ram_type: row[46],
+                cf_ram_speed: row[47],
+                cf_max_ram_capability: row[48],
+                cf_ssd: row[49],
+                cf_ssd_type: row[50],
+                cf_raid: row[51],
+                cf_hdd: row[52],
+                cf_hdd_speed_rpm: row[53],
+                cf_optical_drive: row[54],
+                cf_operating_system: row[55],
+                cf_wireless: row[56],
+                cf_wifi_brand: row[57],
+                cf_bluetooth: row[58],
+                cf_usb_ports: row[59],
+                cf_usb_type_c: row[60],
+                cf_video_ports: row[61],
+                cf_thunderbolt: row[62],
+                cf_audio_ports: row[63],
+                cf_card_reader: row[64],
+                cf_keyboard: row[65],
+                cf_backlit_keyboard: row[66],
+                cf_fingerprint_reader: row[67],
+                cf_webcam: row[68],
+                cf_battery: row[69],
+                cf_power_supply: row[70],
+                cf_item_length: row[71],
+                cf_item_width: row[72],
+                cf_item_height: row[73],
+                cf_item_weight: row[74],
+            }
+            partsList.push(partObj);
+        }
+    })
+    return partsList;
 }
