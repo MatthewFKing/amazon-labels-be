@@ -10,6 +10,9 @@ const techSchema = new Schema({
     type: String,
     enum: ['A1', 'A2', 'B']
   },
+  tier: String,
+  email: String,
+  
     
 });
 

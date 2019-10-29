@@ -154,6 +154,7 @@ exports.partList = (data, callback) => {
         });
     });
 
+    //callback(addParts(parts));
     callback(addParts(parts));
 }
 
