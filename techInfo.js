@@ -1,4 +1,4 @@
-const techs = [
+const techInfo = [
   {
     name: "Donald White",
     number: '43674645',
@@ -168,3 +168,6 @@ const techs = [
     active: true
   },
 ]
+
+
+module.exports = techInfo;

@@ -136,8 +136,68 @@ currentMonth = (data, month) => {
   return {days, weeks};
 }
 
-paginate = (data, limit) => {
+techReport = async (number, logData) => {
+  let dataList = logData.filter(line => line.tech_number === number)
+  let report = workingDays(logData);
 
+  let bestDayIndex = report.dailyPoints.reduce((current, next, i) => {
+    return (next[1] > current) ? i : current;
+  },0)
+
+  let bestDay = report.dailyPoints[bestDayIndex]
+
+  let totalPoints = report.dailyPoints.reduce((a, b) => {
+    return a+b[1];
+  }, 0);
+
+  let totalDaysWorked = report.dailyPoints.filter(a => {
+    return a[1] > 5
+  });
+  
+
+  const techReport = {
+    bestDay,
+    totalPoints,
+    daysWorked: totalDaysWorked.length,
+    prodPoints: report,
+    prodUnits: unitTotal(dataList),
+    currentMonth: currentMonth(report, 8)
+  }
+  //console.log()
+  return techReport;
+}
+
+exports.teamReport = async (techs, logData, callback) => {
+  const teamReport = [];
+  techs.forEach(tech => {
+    let dataList = logData.filter(line => line.tech_number === tech.number)
+    let report = workingDays(dataList);
+
+    let totalPoints = report.dailyPoints.reduce((a, b) => {
+      return a+b[1];
+    }, 0);
+
+    let unitTotal = dataList.filter((entry) => {
+      return entry.sku.indexOf('LT') > -1 || entry.sku.indexOf('DT') > -1
+    });
+
+    let totalDaysWorked = report.dailyPoints.filter(a => {
+      return a[1] > 5
+    });
+
+    const techReport = {
+      name: tech.name,
+      number: tech.number,
+      hoursWorked: totalDaysWorked.length * 8,
+      totalPoints,
+      prodPoints: report,
+      pph: totalPoints / (totalDaysWorked.length * 8),
+      ppd: totalPoints / totalDaysWorked.length,
+      unitTotal: unitTotal.length,
+    }
+    teamReport.push(techReport);
+  });
+  callback(teamReport);
 }
 
 //points per

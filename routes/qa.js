@@ -4,6 +4,7 @@ const qaLog = require("../helpers/qaSheet").qaLog;
 const singleTech = require("../helpers/qaSheet").singleTech;
 const qaEntry = require('../models/QAEntry');
 const tech = require('../models/Tech');
+const techInfo = require('../techInfo');
 const qaArchive = require("../helpers/qaSheet").archiveLog;
 const fbaArchive = require("../helpers/qaSheet").archiveFbaLog;
 const prodReports = require("../helpers/prodReports");
@@ -58,7 +59,7 @@ router.post('/qasearch', async (req, res, next) => {
   console.log('/qasearch')
   const { type, date } = req.body;
   const query = req.body.query;
-  
+  console.log(date);
   let finder = {};
   if (type && query) {
     let searchList = [];
@@ -108,17 +109,17 @@ const j = schedule.scheduleJob('*/30 * * * *', async () => {
 });
 });
 
-router.post('/addtech', async (req, res, next) => {
+router.get('/addtech', async (req, res, next) => {
   console.log(req.ip);
   console.log('/addtech')
-  //console.log(req.body);
-  req.body.map(techInfo => {
+  const del = await tech.deleteMany({});
+  techInfo.map(techInfo => {
       const newTech = new tech(techInfo);
       newTech.save((err, id) => {
           if (err) return console.log(err);
       });
   });
-  res.send('got it')
+  res.send(del)
 });
 
 router.get('/updatemonth', async (req, res, next) => {
@@ -143,5 +144,17 @@ router.get('/qareport', (req, res, next) => {
 
   });
 });
+
+router.post('/prod-team', async (req, res, next) => {
+
+  //{ start: '2019-10-14T04:00:00.000Z', end: '2019-10-18T03:59:59.999Z' }
+  console.log(req.body);
+  const { team } = req.body;
+  const techs = await tech.find({ team, active: true })
+  const qaLog = await qaEntry.find({ date: {"$gte": '2019-10-14T04:00:00.000Z', "$lt": '2019-10-19T03:59:59.999Z'} })
+  prodReports.teamReport(techs, qaLog, (returnData) => {
+    res.send(returnData);
+  })
+})
 
 module.exports = router;
