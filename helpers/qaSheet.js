@@ -1,4 +1,8 @@
 const moment = require('moment');
+const GoogleSpreadsheet = require('google-spreadsheet');
+const creds = require('../client_secret.json');
+const doc = new GoogleSpreadsheet('1W3IeQTmiEpmt1_5V9nzJFrnUu5OE8T_1LeF7bGukizs');
+
 exports.qaLog = (data, callback) => {
   var GoogleSpreadsheet = require('google-spreadsheet');
 
@@ -40,7 +44,7 @@ exports.qaLog = (data, callback) => {
             notes: row.notes,
             this_month: moment(row.date, "MM-DD-YYYY").isSame(moment(), 'month'),
             fulfillment_type: 'Production'
-            
+
           }
 
           entries.push(entry);
@@ -98,36 +102,9 @@ exports.qaLog = (data, callback) => {
     });
   });
 }
-const dates = [
-  '09/02/2019',
-  '09/03/2019',
-  '09/04/2019',
-  '09/05/2019',
-  '09/06/2019',
-  '09/09/2019',
-  '09/10/2019',
-  '09/11/2019',
-  '09/12/2019',
-  '09/13/2019',
-  '09/16/2019',
-  '09/17/2019',
-  '09/18/2019',
-  '09/19/2019',
-  '09/20/2019',
-  '09/23/2019',
-  '09/24/2019',
-  '09/25/2019',
-  '09/26/2019',
-];
 
 exports.singleTech = (data, callback) => {
   const qaEntries = data;
-  // let dates = qaEntries.map(entry => {
-  //   return moment(entry.date).format('L');
-  //   //return entry.date;
-  // });
-  // dates = [...new Set(dates)].sort();
-
   let pointData = [];
 
   dates.forEach((date, i) => {
@@ -144,49 +121,100 @@ exports.singleTech = (data, callback) => {
   callback({ dates, pointData });
 }
 
-
-exports.archiveLog = (data, callback) => {
-
-  const logData = require('../data/qa_prod_archive.json');
-  console.log(logData.length);
-  
-
-  const entries = [];
+exports.updateNpuLog = (callback) => {
+  doc.useServiceAccountAuth(creds, function (err) {
+    // Production Log
+    doc.getRows(2, (err, rows) => {
+      const entries = [];
       let time = '';
-      logData.forEach(row => {
-        if (row.timeCheckedIn) {
-          time = row.timeCheckedIn;
+      rows.forEach(row => {
+        if (row.timecheckedin) {
+          time = row.timecheckedin;
         }
 
-        if (row.invoicepo) {
+        if (row.timestamp) {
           let entry = {
-            date: row.date,
-            fb_status: row.fb,
-            order_id: row.orderid,
-            invoice_number: row.invoicepo,
-            serial: row.serial,
-            model: row.model,
-            sku: row.upgradeFbSku,
-            shipping_method: row.shipping,
-            must_ship: row.brand,
-            tech_number: row.technumber,
-            qa: {
-              blemish_spec: row.blemishspec,
-              final_qa: row.finalqa,
-              checked_at: row.checkedat,
-              checked_in_by: row.checkedinby
-            },
-            tracking_number: row.tracking,
-            points_value: row.points,
-            time_checked_in: time,
+            date: row.timestamp,
+            email_address: row.emailaddress,
+            invoice_number: row.invoicenumber,
+            brand: row.pcbrand,
+            sku: row.fishbowlsku,
+            serial_number: row.serialnumber,
+            cpu: row.processor,
+            gpu: row.graphics,
+            ram: row.ramquantityandconfiguration,
+            hdd: row.hddssdmsatastoragemedia,
+            odd: row.opticaldiskdriveodd,
+            screen_resolution: row.screenresolutionandfinishglossymatte,
+            os: row.operatingsystem,
+            new: row.neworpreviouslyopened,
+            damage_desc: row.describedamageissue,
+            damage_loc: row.damagelocation,
+            missing_packaging: row.anymissingpackagingaccessoriesadapters,
+            functional: row.functional,
+            tech_caused: row.didthetechcausethedamage,
+            cpar_level: row.cparlevel,
+            qa_approval: row.qaapprovaltosubmittheformqainitials,
             notes: row.notes,
-            this_month: moment(row.date, "MM-DD-YYYY").isSame(moment(), 'month')
+            unit_cost: row.costofunit,
+            tech_number: row.cmdtech,
+            tech_name: row.techname,
+            team: row.team,
+
           }
 
           entries.push(entry);
         }
       });
+
       callback(entries);
+    });
+  });
+}
+
+
+exports.archiveLog = (data, callback) => {
+
+  const logData = require('../data/qa_prod_archive.json');
+  console.log(logData.length);
+
+
+  const entries = [];
+  let time = '';
+  logData.forEach(row => {
+    if (row.timeCheckedIn) {
+      time = row.timeCheckedIn;
+    }
+
+    if (row.invoicepo) {
+      let entry = {
+        date: row.date,
+        fb_status: row.fb,
+        order_id: row.orderid,
+        invoice_number: row.invoicepo,
+        serial: row.serial,
+        model: row.model,
+        sku: row.upgradeFbSku,
+        shipping_method: row.shipping,
+        must_ship: row.brand,
+        tech_number: row.technumber,
+        qa: {
+          blemish_spec: row.blemishspec,
+          final_qa: row.finalqa,
+          checked_at: row.checkedat,
+          checked_in_by: row.checkedinby
+        },
+        tracking_number: row.tracking,
+        points_value: row.points,
+        time_checked_in: time,
+        notes: row.notes,
+        this_month: moment(row.date, "MM-DD-YYYY").isSame(moment(), 'month')
+      }
+
+      entries.push(entry);
+    }
+  });
+  callback(entries);
 }
 
 
@@ -194,84 +222,84 @@ exports.archiveLog = (data, callback) => {
 
   const logData = require('../data/2018_qa_prod_archive.json');
   console.log(logData.length);
-  
+
 
   const entries = [];
-      let time = '';
-      logData.forEach(row => {
-        if (row.timeCheckedIn) {
-          time = row.timeCheckedIn;
-        }
+  let time = '';
+  logData.forEach(row => {
+    if (row.timeCheckedIn) {
+      time = row.timeCheckedIn;
+    }
 
-        if (row.invoicepo) {
-          let entry = {
-            date: row.date,
-            fb_status: row.fb,
-            order_id: row.orderid,
-            invoice_number: row.invoicepo,
-            serial: row.serial,
-            model: row.model,
-            sku: row.upgradeFbSku,
-            shipping_method: row.shipping,
-            must_ship: row.brand,
-            tech_number: row.technumber,
-            qa: {
-              blemish_spec: row.blemishspec,
-              final_qa: row.finalqa,
-              checked_at: row.checkedat,
-              checked_in_by: row.checkedinby
-            },
-            tracking_number: row.tracking,
-            points_value: row.points,
-            time_checked_in: time,
-            notes: row.notes,
-            this_month: moment(row.date, "MM-DD-YYYY").isSame(moment(), 'month')
-          }
+    if (row.invoicepo) {
+      let entry = {
+        date: row.date,
+        fb_status: row.fb,
+        order_id: row.orderid,
+        invoice_number: row.invoicepo,
+        serial: row.serial,
+        model: row.model,
+        sku: row.upgradeFbSku,
+        shipping_method: row.shipping,
+        must_ship: row.brand,
+        tech_number: row.technumber,
+        qa: {
+          blemish_spec: row.blemishspec,
+          final_qa: row.finalqa,
+          checked_at: row.checkedat,
+          checked_in_by: row.checkedinby
+        },
+        tracking_number: row.tracking,
+        points_value: row.points,
+        time_checked_in: time,
+        notes: row.notes,
+        this_month: moment(row.date, "MM-DD-YYYY").isSame(moment(), 'month')
+      }
 
-          entries.push(entry);
-        }
-      });
-      callback(entries);
+      entries.push(entry);
+    }
+  });
+  callback(entries);
 }
 
 exports.archiveFbaLog = (data, callback) => {
 
   const logData = require('../data/2018_qa_fba_archive.json');
   console.log(logData.length);
-  
+
 
   const entries = [];
-      let time = '';
-      logData.forEach(row => {
-        if (row.timeCheckedIn) {
-          time = row.timeCheckedIn;
-        }
+  let time = '';
+  logData.forEach(row => {
+    if (row.timeCheckedIn) {
+      time = row.timeCheckedIn;
+    }
 
-        if (row.woNumber) {
-          let fbaentry = {
-            date: row.date,
-            order_id: row.woNumber,
-            invoice_number: row.wonumber,
-            serial: row.serial,
-            model: row.model,
-            sku: row.upgradeFbSku,
-            tech_number: row.tech,
-            qa: {
-              blemish_spec: row.blemishSpec,
-              final_qa: row.finalQaSignature,
-              checked_at: row.checkedAt,
-              checked_in_by: row.checkedInBy
-            },
-            points_value: row.points,
-            time_checked_in: time,
-            notes: row.notes,
-            full_test: row.fulltest,
-            this_month: moment(row.date, "MM-DD-YYYY").isSame(moment(), 'month')
-          }
-          entries.push(fbaentry);
-        }
-      });
-      callback(entries);
+    if (row.woNumber) {
+      let fbaentry = {
+        date: row.date,
+        order_id: row.woNumber,
+        invoice_number: row.wonumber,
+        serial: row.serial,
+        model: row.model,
+        sku: row.upgradeFbSku,
+        tech_number: row.tech,
+        qa: {
+          blemish_spec: row.blemishSpec,
+          final_qa: row.finalQaSignature,
+          checked_at: row.checkedAt,
+          checked_in_by: row.checkedInBy
+        },
+        points_value: row.points,
+        time_checked_in: time,
+        notes: row.notes,
+        full_test: row.fulltest,
+        this_month: moment(row.date, "MM-DD-YYYY").isSame(moment(), 'month')
+      }
+      entries.push(fbaentry);
+    }
+  });
+  callback(entries);
 }
 
 

@@ -4,9 +4,11 @@ const qaLog = require("../helpers/qaSheet").qaLog;
 const singleTech = require("../helpers/qaSheet").singleTech;
 const qaEntry = require('../models/QAEntry');
 const tech = require('../models/Tech');
+const npuEntry = require('../models/NPU');
 const techInfo = require('../techInfo');
 const qaArchive = require("../helpers/qaSheet").archiveLog;
 const fbaArchive = require("../helpers/qaSheet").archiveFbaLog;
+const qaHelpers = require("../helpers/qaSheet");
 const prodReports = require("../helpers/prodReports");
 const moment = require('moment');
 const schedule = require('node-schedule');
@@ -154,6 +156,19 @@ router.post('/prod-team', async (req, res, next) => {
   const qaLog = await qaEntry.find({ date: {"$gte": '2019-10-14T04:00:00.000Z', "$lt": '2019-10-19T03:59:59.999Z'} })
   prodReports.teamReport(techs, qaLog, (returnData) => {
     res.send(returnData);
+  })
+})
+
+
+router.get('/update-npu', async (req, res, next) => {
+  qaHelpers.updateNpuLog((returnData) => {
+    returnData.forEach(entry => {
+      const newEntry = new npuEntry(entry);
+      newEntry.save((err, id) => {
+          if (err) return console.log(err);
+      });
+  });
+  res.send(returnData.length)
   })
 })
 

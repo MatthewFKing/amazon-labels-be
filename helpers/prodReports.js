@@ -153,6 +153,8 @@ techReport = async (number, logData) => {
   let totalDaysWorked = report.dailyPoints.filter(a => {
     return a[1] > 5
   });
+
+  
   
 
   const techReport = {
