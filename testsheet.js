@@ -1,2 +1,2 @@
 const moment = require('moment');
-console.log(moment(row.date, "MM-DD-YYYY").isSame(moment(), 'month'));
+console.log(moment(moment().subtract(1, 'week')).startOf('week').format('L'));

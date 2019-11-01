@@ -84,15 +84,15 @@ router.post('/qasearch', async (req, res, next) => {
 router.get('/updatelog', async (req, res, next) => {
   console.log(req.ip);
   console.log('/updatelog')
-  const del = await qaEntry.deleteMany({ this_month: true });
+  //const del = await qaEntry.deleteMany({ this_month: true });
   
-  qaLog(del, (entries) => {
-      // entries.forEach(entry => {
-      //     const newEntry = new qaEntry(entry);
-      //     newEntry.save((err, id) => {
-      //         if (err) return console.log(err);
-      //     });
-      // });
+  qaHelpers.qaLogLastMonth(del, (entries) => {
+      entries.forEach(entry => {
+          const newEntry = new qaEntry(entry);
+          newEntry.save((err, id) => {
+              if (err) return console.log(err);
+          });
+      });
       res.json(entries)
   });
 });
@@ -151,9 +151,9 @@ router.post('/prod-team', async (req, res, next) => {
 
   //{ start: '2019-10-14T04:00:00.000Z', end: '2019-10-18T03:59:59.999Z' }
   console.log(req.body);
-  const { team } = req.body;
+  const { team, date } = req.body;
   const techs = await tech.find({ team, active: true })
-  const qaLog = await qaEntry.find({ date: {"$gte": '2019-10-14T04:00:00.000Z', "$lt": '2019-10-19T03:59:59.999Z'} })
+  const qaLog = await qaEntry.find({ date: {"$gte": date.start, "$lt": date.end} })
   prodReports.teamReport(techs, qaLog, (returnData) => {
     res.send(returnData);
   })
@@ -170,6 +170,14 @@ router.get('/update-npu', async (req, res, next) => {
   });
   res.send(returnData.length)
   })
+})
+
+router.post('/tech-hours', async (req, res, next) => {
+  console.log(req.body.data);
+  const filter = req.body.data.filter(line => line[3] === 'S4Z100078').reduce((total, filLine) =>{
+    return total + parseInt(filLine[6])
+  }, 0)
+  res.json(filter)
 })
 
 module.exports = router;

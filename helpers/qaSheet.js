@@ -303,3 +303,104 @@ exports.archiveFbaLog = (data, callback) => {
 }
 
 
+
+exports.qaLogLastMonth = (data, callback) => {
+  var GoogleSpreadsheet = require('google-spreadsheet');
+
+
+  var creds = require('../client_secret.json');
+  var doc = new GoogleSpreadsheet('1W3IeQTmiEpmt1_5V9nzJFrnUu5OE8T_1LeF7bGukizs');
+
+  doc.useServiceAccountAuth(creds, function (err) {
+    // Production Log
+    doc.getRows(7, (err, rows) => {
+      const entries = [];
+      let time = '';
+      rows.forEach(row => {
+        if (row.timecheckedin) {
+          time = row.timecheckedin;
+        }
+
+        if (row.invoicepo) {
+          let entry = {
+            date: row.date,
+            fb_status: row._cokwr,
+            order_id: row.invoicepo,
+            invoice_number: row.invoicepo_2,
+            serial: row.serial,
+            model: row.model,
+            sku: row.upgradefbsku,
+            shipping_method: row.shipping,
+            must_ship: row.mustship,
+            tech_number: row.tech,
+            qa: {
+              blemish_spec: row.blemishspec,
+              final_qa: row.finalqasignature,
+              checked_at: row.checkedat,
+              checked_in_by: row.checkedinby
+            },
+            tracking_number: row.tracking,
+            points_value: row._db1zf,
+            time_checked_in: time,
+            notes: row.notes,
+            this_month: moment(row.date, "MM-DD-YYYY").isSame(moment(), 'month'),
+            fulfillment_type: 'Production'
+
+          }
+
+          entries.push(entry);
+        }
+      });
+      // FBA Production Log
+      doc.getRows(8, (err, fbaRows) => {
+        //console.log(fbaRows);
+
+        // let date = fbaRows.filter(row =>  row.timecheckedin).map(line => {
+        //   return [line.wonumber, line.timecheckedin]
+        // });
+        //console.log(date);
+        let time = '';
+        fbaRows.forEach(row => {
+          if (row.timecheckedin) {
+            time = row.timecheckedin;
+          }
+          //console.log(time);
+          if (row.wonumber) {
+            let fbaentry = {
+              date: row.date,
+              order_id: row.wonumber,
+              invoice_number: row.wonumber,
+              serial: row.serial,
+              model: row.model,
+              sku: row.upgradefbsku,
+              tech_number: row.tech,
+              qa: {
+                blemish_spec: row.blemishspec,
+                final_qa: row.finalqasignature,
+                checked_at: row.checkedat,
+                checked_in_by: row.checkedinby
+              },
+              points_value: row._cu76f,
+              time_checked_in: time,
+              notes: row.notes,
+              full_test: row.fulltest,
+              this_month: moment(row.date, "MM-DD-YYYY").isSame(moment(), 'month'),
+              fulfillment_type: 'FBA'
+            }
+            entries.push(fbaentry);
+          }
+        });
+        //console.log(entries.length);
+        callback(entries);
+        // entries.forEach(entry => {
+        //   const newEntry = new qaEntry(entry);
+        //   newEntry.save((err, id) => {
+        //     if (err) return console.log(err);
+        //   });
+        // });
+      });
+
+    });
+  });
+}
+
